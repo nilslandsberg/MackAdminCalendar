@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mack Admin Calendar</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <h1>Mack Scheduler Test Admin Calendar</h1>
+    <div id="calendar">
+        <!-- Calendar header -->
+        <div class="calendar-header">
+            <button id="prev-month-btn">&lt;</button>
+            <h2 id="current-month"></h2>
+            <button id="next-month-btn">&gt;</button>
+        </div>
+        
+        <!-- Calendar grid -->
+        <div class="calendar-grid">
+            <div class="day">Sun</div>
+            <div class="day">Mon</div>
+            <div class="day">Tue</div>
+            <div class="day">Wed</div>
+            <div class="day">Thu</div>
+            <div class="day">Fri</div>
+            <div class="day">Sat</div>
+            <!-- Calendar days will be populated by the JavaScript -->
+        </div>
+    </div>
+
+    <!-- Dropdown menu for selecting available times-->
+    <div id="time-dropdown-container">
+      <label for="time-dropdown">Select Start Date:</label>
+      <select id="time-dropdown">
+        <option value="">Select Start Time</option>
+      </select>
+    </div>
+    <div id="time-dropdown-container">
+      <label for="time-dropdown">Select End Date:</label>
+      <select id="time-dropdown">
+        <option value="">Select End Time</option>
+      </select>
+    </div>
+    <div id="get-appointments-button">
+      <button>Get Appointments</button>
+    </div>
+    <div id="get-blocked-times">
+      <button>See Blocked Times</button>
+    </div>
+    <div>
+      <button>Block Times</button>
+    </div>
+    <div>
+      <button>Unblock Times</button>
+    </div>
+
+    <script src="adminCalendar.js"></script>
+</body>
+</html>
