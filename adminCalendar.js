@@ -1,6 +1,7 @@
 // Get a reference to the calendar grid
 const calendarGrid = document.querySelector('.calendar-grid');
-let selectedDate = null;
+let selectedStartDate = null;
+let selectedEndDate = null;
 const baseUrl = 'http://MackScheduler.eba-najyqvxe.us-east-2.elasticbeanstalk.com/api/'
 let isSelectingStartDate = true;
 
@@ -31,6 +32,7 @@ function generateCalendarDays(year, month) {
         // Store the year and month data attributes on each calendar day
         calendarDay.setAttribute('data-year', year);
         calendarDay.setAttribute('data-month', month);
+        calendarDay.setAttribute('data-day', day);
         calendarGrid.appendChild(calendarDay);
     }
 }
@@ -47,23 +49,57 @@ function handleDayClick(event) {
   }
 
   if (isSelectingStartDate) {
-    if (selectedDate !== null) {
-      selectedDate.classList.remove('selected');
-    }
+    clearSelection();
 
-    selectedDate = clickedDay;
-    selectedDate.classList.add('selected');
+    selectedStartDate = clickedDay;
+    selectedStartDate.classList.add('selected');
 
     const selectedYear = parseInt(clickedDay.getAttribute('data-year'));
     const selectedMonth = parseInt(clickedDay.getAttribute('data-month'));
     const selectedDay = dayNumber;
 
     // Create UTC Date from the clicked date
-    const selectedStartDateUtc = new Date(Date.UTC(selectedYear, selectedMonth, selectedDay));
-    const selectedStartUtcString = selectedStartDateUtc.toISOString();
+    const selectedStartDateUtc = new Date(Date.UTC(selectedYear, selectedMonth, selectedDay)).toISOString();
 
     isSelectingStartDate = false;
+  } else {
+    selectedEndDate = clickedDay;
+
+    selectedEndDate.classList.add('selected');
+
+    const selectedYear = parseInt(clickedDay.getAttribute('data-year'));
+    const selectedMonth = parseInt(clickedDay.getAttribute('data-month'));
+    const selectedDay = dayNumber;
+
+    // Create UTC Date from the clicked date
+    const selectedEndDateUtc = new Date(Date.UTC(selectedYear, selectedMonth,selectedDay)).toISOString();
+    
+    // Highlight dates between start and end dates
+    const startDateIndex = parseInt(selectedStartDate.textContent);
+    const endDateIndex = parseInt(selectedEndDate.textContent);
+
+    if (endDateIndex >= startDateIndex) {
+      // Iterate through the days between start and end dates
+      const daysBetween = (endDateIndex > startDateIndex) ? endDateIndex - startDateIndex : startDateIndex - endDateIndex;
+      for (let i = 1; i < daysBetween; i++) {
+        const inBetweenDate = document.querySelector(`[data-year="${currentYear}"][data-month="${currentMonth}"][data-day="${startDateIndex + i}"]`);
+        inBetweenDate.classList.add('selected');
+      }
+    } else {
+      console.log('End date must be later than start date')
+      selectedEndDate.classList.remove('selected');
+      return;
+    }
+    isSelectingStartDate = true;
   }
+}
+
+// Function to clear selected date range
+function clearSelection () {
+  const selectedDates = document.querySelectorAll('.day.selected');
+  selectedDates.forEach(date => {
+    date.classList.remove('selected');
+  })
 }
 
 // Function to update click event listeners for the days after changing the month
