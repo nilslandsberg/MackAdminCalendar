@@ -80,10 +80,21 @@ function handleDayClick(event) {
 
     if (endDateIndex >= startDateIndex) {
       // Iterate through the days between start and end dates
-      const daysBetween = (endDateIndex > startDateIndex) ? endDateIndex - startDateIndex : startDateIndex - endDateIndex;
-      for (let i = 1; i < daysBetween; i++) {
-        const inBetweenDate = document.querySelector(`[data-year="${currentYear}"][data-month="${currentMonth}"][data-day="${startDateIndex + i}"]`);
-        inBetweenDate.classList.add('selected');
+      const daysBetween = endDateIndex - startDateIndex;
+      for (let i = 0; i < daysBetween; i++) {
+        const indexToHighlight = startDateIndex + i;
+        const dayToHighlight = calendarDays[indexToHighlight];
+        const dayOfWeekToHighlight = new Date(
+          currentYear,
+          currentMonth,
+          parseInt(dayToHighlight.textContent)
+        ).getDay();
+
+        // Check if the day to highlight is not Saturday or Sunday
+        if (dayOfWeekToHighlight !== 0 && dayOfWeekToHighlight !== 6) {
+          dayToHighlight.classList.add('selected');
+        }
+        console.log(dayOfWeekToHighlight)
       }
     } else {
       console.log('End date must be later than start date')
