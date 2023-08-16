@@ -195,8 +195,8 @@ function handleDayClick(event) {
 
     // Create local date object from the clicked date for updating the HTML
     const selectedStartDateInfo = new Date(selectedYear, selectedMonth, selectedDay);
-    // Create UTC date object for api calls
-    selectedStartDateUTC = new Date(Date.UTC(selectedYear, selectedMonth, selectedDay));
+    // Create UTC date object string for api calls
+    selectedStartDateUtc = new Date(Date.UTC(selectedYear, selectedMonth, selectedDay)).toISOString();
 
     isSelectingStartDate = false;
 
@@ -216,8 +216,8 @@ function handleDayClick(event) {
 
     // Create local date object for updating the HTML
     const selectedEndDateInfo = new Date(selectedYear, selectedMonth,selectedDay);
-    // Create UTC date object for api calls
-    selectedEndDateUtc = new Date(Date.UTC(selectedYear, selectedMonth, selectedDay));
+    // Create UTC date object string for api calls
+    selectedEndDateUtc = new Date(Date.UTC(selectedYear, selectedMonth, selectedDay)).toISOString();
 
     // Highlight dates between start and end dates
     const startDateIndex = parseInt(selectedStartDate.textContent);
@@ -272,10 +272,28 @@ const getAppointmentsButton = document.getElementById('get-appointments-button')
 const getBlockedTimesButton = document.getElementById('get-blocked-times-button');
 const blockTimesButton = document.getElementById('block-times-button');
 const unblockTimesButton = document.getElementById('unblock-times-button');
+
 getAppointmentsButton.addEventListener('click', () => {
-  console.log('getAppointments click')
+  fetchAppointments(selectedStartDateUtc, selectedEndDateUtc);
 });
 
+// Function to fetch appointments
+function fetchAppointments(startDate, endDate) {
+  const appointments = fetch(`${baseUrl}calendar/appointment/${startDate}/${endDate}`)
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(data => {
+    const bookedAppointments = data.bookedAppointments;
+    console.log(bookedAppointments)
+  })
+  .catch(error => {
+    console.error('Error fetching appointments', error);
+  });
+}
 getBlockedTimesButton.addEventListener('click', () => {
   console.log('getBlockedTimes click')
 });
