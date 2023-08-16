@@ -49,6 +49,7 @@ function handleDayClick(event) {
   const clickedDay = event.target;
   const dayNumber = clickedDay.textContent
   const dayOfWeek = new Date(currentYear, currentMonth, dayNumber).getDay();
+  const selectedEndDateElement = document.getElementById('selected-end-date');
 
   // Check if the clicked day is Saturday or Sunday
   if (dayOfWeek === 0 || dayOfWeek === 6) {
@@ -57,6 +58,7 @@ function handleDayClick(event) {
 
   if (isSelectingStartDate) {
     clearSelection();
+    selectedEndDateElement.textContent = "Select End Date";
 
     selectedStartDate = clickedDay;
     selectedStartDate.classList.add('selected');
@@ -84,7 +86,7 @@ function handleDayClick(event) {
     const selectedMonth = parseInt(clickedDay.getAttribute('data-month'));
     const selectedDay = dayNumber;
 
-    // Create local date object from the clicked date for updating the HTML
+    // Create local date object for updating the HTML
     const selectedEndDateInfo = new Date(selectedYear, selectedMonth,selectedDay);
     // Create UTC date object for api calls
     selectedEndDateUtc = new Date(Date.UTC(selectedYear, selectedMonth, selectedDay));
@@ -111,7 +113,7 @@ function handleDayClick(event) {
         }
       }
     // Update the HTML element
-    const selectedEndDateElement = document.getElementById('selected-end-date');
+    
     selectedEndDateElement.textContent = `Selected End Date: ${selectedEndDateInfo.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`;
     } else {
       console.log('End date must be later than start date')
