@@ -56,11 +56,13 @@ document.getElementById('prev-month-btn').addEventListener('click', () => {
       currentYear--;
       currentMonth = 11; 
   }
+
   generateCalendarDays(currentYear, currentMonth);
   document.getElementById('current-month').textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date(currentYear, currentMonth, 1));
 
   // Update the click event listeners for the days after changing the month
   updateClickEventListeners();
+  populateDropdownWithTimes(currentYear, currentMonth);
 });
 
 document.getElementById('next-month-btn').addEventListener('click', () => {
@@ -74,6 +76,7 @@ document.getElementById('next-month-btn').addEventListener('click', () => {
 
   // Update the click event listeners for the days after changing the month
   updateClickEventListeners();
+  populateDropdownWithTimes(currentYear, currentMonth);
 });
 
 // Function to update click event listeners for the days after changing the month
@@ -100,7 +103,6 @@ const endTimeDropdown = document.getElementById('end-time-dropdown');
 function populateDropdownWithTimes(year, month) {
   // Get the user's time zone
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  console.log(userTimeZone)
   // Options to display times in AM/PM format
   const userTimeZoneOptions = {
     timeZone: userTimeZone,
@@ -111,9 +113,9 @@ function populateDropdownWithTimes(year, month) {
 
   times.forEach(time => {
     // Convert the UTC time string to a Date object
+    // Make sure that if the month is a single digit that it is preceded by a 0
     const monthString = (month +1).toString().padStart(2, '0');
-    const utcTime = new Date(`${year}-${monthString}-01T${time}:00Z`);
-    console.log(utcTime);
+    const utcTime = new Date(`${year}-${monthString}-01T${time}`);
     // Get the local time in the user's time zone
     const localTime = utcTime.toLocaleTimeString('en-US', userTimeZoneOptions);
 
@@ -128,22 +130,22 @@ function populateDropdownWithTimes(year, month) {
 
 // Set the start and end times in UTC format
 const times = [
-  "13:00",
-  "13:30",
-  "14:00",
-  "14:30",
-  "15:00",
-  "15:30",
-  "16:00",
-  "16:30",
-  "17:00",
-  "17:30",
-  "18:00",
-  "18:30",
-  "19:00",
-  "19:30",
-  "20:00",
-  "20:30",
+  "13:00:00Z",
+  "13:30:00Z",
+  "14:00:00Z",
+  "14:30:00Z",
+  "15:00:00Z",
+  "15:30:00Z",
+  "16:00:00Z",
+  "16:30:00Z",
+  "17:00:00Z",
+  "17:30:00Z",
+  "18:00:00Z",
+  "18:30:00Z",
+  "19:00:00Z",
+  "19:30:00Z",
+  "20:00:00Z",
+  "20:30:00Z",
 ];
 
 // Call the function to populate the dropdown menus with times from the current year and month
@@ -191,9 +193,6 @@ function handleDayClick(event) {
     const selectedMonth = parseInt(clickedDay.getAttribute('data-month'));
     const selectedDay = dayNumber;
 
-    // Update the dropdown menus with the correct year/month
-    populateDropdownWithTimes(selectedYear, selectedMonth)
-
     // Create local date object from the clicked date for updating the HTML
     const selectedStartDateInfo = new Date(selectedYear, selectedMonth, selectedDay);
     // Create UTC date object for api calls
@@ -207,7 +206,9 @@ function handleDayClick(event) {
   } else {
     selectedEndDate = clickedDay;
 
-    selectedEndDate.classList.add('selected');
+    // Get the first day of the month (0-6 for Sunday-Saturday)
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+
 
     const selectedYear = parseInt(clickedDay.getAttribute('data-year'));
     const selectedMonth = parseInt(clickedDay.getAttribute('data-month'));
@@ -221,7 +222,7 @@ function handleDayClick(event) {
     // Highlight dates between start and end dates
     const startDateIndex = parseInt(selectedStartDate.textContent);
     const endDateIndex = parseInt(selectedEndDate.textContent);
-
+   
     if (endDateIndex >= startDateIndex) {
       // Iterate through the days between start and end dates
       const daysBetween = endDateIndex - startDateIndex;
@@ -240,7 +241,6 @@ function handleDayClick(event) {
         }
       }
     // Update the HTML element
-    
     selectedEndDateElement.textContent = `Selected End Date: ${selectedEndDateInfo.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`;
     } else {
       console.log('End date must be later than start date')
@@ -256,7 +256,11 @@ function clearSelection () {
   const selectedDates = document.querySelectorAll('.day.selected');
   selectedDates.forEach(date => {
     date.classList.remove('selected');
-  })
+  });
+  selectedStartDate = null;
+  selectedStartDateUTC = null;
+  selectedEndDate = null;
+  selectedEndDateUtc = null;
 }
 
 // API CALLS
