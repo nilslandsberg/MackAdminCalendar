@@ -91,10 +91,16 @@ calendarDays.forEach(day => {
   day.addEventListener('click', handleDayClick);
 });
 
-// POPULATE THE DROPDOWN MENUS
-function populateDropdownWithTimes() {
+// DROPDOWN MENUS
+// Get references to the dropdown menus
+const startTimeDropdown = document.getElementById('start-time-dropdown');
+const endTimeDropdown = document.getElementById('end-time-dropdown');
+
+// Function to populate dropdown menus with times
+function populateDropdownWithTimes(year, month) {
   // Get the user's time zone
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  console.log(userTimeZone)
   // Options to display times in AM/PM format
   const userTimeZoneOptions = {
     timeZone: userTimeZone,
@@ -103,47 +109,60 @@ function populateDropdownWithTimes() {
     minute: 'numeric',
   };
 
-  const dropdownStart = document.getElementById('start-time-dropdown');
-  const dropdownEnd = document.getElementById('end-time-dropdown');
-
   times.forEach(time => {
-    // Convert the UTC time string into a Date object
-    const utcDate = new Date(time);
-    // Convert to the user's local time
-    const localTime = utcDate.toLocaleTimeString('en-US', userTimeZoneOptions);
+    // Convert the UTC time string to a Date object
+    const monthString = (month +1).toString().padStart(2, '0');
+    const utcTime = new Date(`${year}-${monthString}-01T${time}:00Z`);
+    console.log(utcTime);
+    // Get the local time in the user's time zone
+    const localTime = utcTime.toLocaleTimeString('en-US', userTimeZoneOptions);
 
-    // Create an option element
     const option = document.createElement('option');
     option.textContent = localTime;
-    option.value = time; // Store the UTC time string as the option's value
+    option.value = time;
 
-    // Append the option to the dropdowns
-    dropdownStart.appendChild(option.cloneNode(true));
-    dropdownEnd.appendChild(option.cloneNode(true));
+    startTimeDropdown.appendChild(option.cloneNode(true));
+    endTimeDropdown.appendChild(option.cloneNode(true));
   });
 }
 
-// Set the start and end times in UTC (9am-5pm EST)
+// Set the start and end times in UTC format
 const times = [
-  "2023-08-02T13:00:00Z",
-  "2023-08-02T13:30:00Z",
-  "2023-08-02T14:00:00Z",
-  "2023-08-02T14:30:00Z",
-  "2023-08-02T15:00:00Z",
-  "2023-08-02T15:30:00Z",
-  "2023-08-02T16:00:00Z",
-  "2023-08-02T16:30:00Z",
-  "2023-08-02T17:00:00Z",
-  "2023-08-02T17:30:00Z",
-  "2023-08-02T18:00:00Z",
-  "2023-08-02T18:30:00Z",
-  "2023-08-02T19:00:00Z",
-  "2023-08-02T19:30:00Z",
-  "2023-08-02T20:00:00Z",
-  "2023-08-02T20:30:00Z",
-]
-// Call the function to populate the dropdown menus
-populateDropdownWithTimes();
+  "13:00",
+  "13:30",
+  "14:00",
+  "14:30",
+  "15:00",
+  "15:30",
+  "16:00",
+  "16:30",
+  "17:00",
+  "17:30",
+  "18:00",
+  "18:30",
+  "19:00",
+  "19:30",
+  "20:00",
+  "20:30",
+];
+
+// Call the function to populate the dropdown menus with times from the current year and month
+populateDropdownWithTimes(currentYear, currentMonth);
+
+// Store the selected times
+let selectedStartTime = null;
+let selectedEndTime = null;
+
+// Event listeners for dropdown menus
+startTimeDropdown.addEventListener('change', (e) => {
+  selectedStartTime = e.target.value;
+  console.log(`Selected Start Time: ${selectedStartTime}`);
+})
+
+endTimeDropdown.addEventListener('change', (e) => {
+  selectedEndTime = e.target.value;
+  console.log(`Selected End Time: ${selectedEndTime}`);
+})
 
 // SELECTING START AND END DATES
 // flag for toggle
@@ -171,6 +190,9 @@ function handleDayClick(event) {
     const selectedYear = parseInt(clickedDay.getAttribute('data-year'));
     const selectedMonth = parseInt(clickedDay.getAttribute('data-month'));
     const selectedDay = dayNumber;
+
+    // Update the dropdown menus with the correct year/month
+    populateDropdownWithTimes(selectedYear, selectedMonth)
 
     // Create local date object from the clicked date for updating the HTML
     const selectedStartDateInfo = new Date(selectedYear, selectedMonth, selectedDay);
@@ -237,7 +259,7 @@ function clearSelection () {
   })
 }
 
-// API Calls
+// API CALLS
 // base URL
 const baseUrl = 'http://MackScheduler.eba-najyqvxe.us-east-2.elasticbeanstalk.com/api/';
 
