@@ -1,8 +1,15 @@
 // Get a reference to the calendar grid
 const calendarGrid = document.querySelector('.calendar-grid');
+
+// date variables
 let selectedStartDate = null;
+let selectedStartDateUtc = null;
 let selectedEndDate = null;
-const baseUrl = 'http://MackScheduler.eba-najyqvxe.us-east-2.elasticbeanstalk.com/api/'
+let selectedEndDateUtc = null;
+
+const baseUrl = 'http://MackScheduler.eba-najyqvxe.us-east-2.elasticbeanstalk.com/api/';
+
+// flag for toggle
 let isSelectingStartDate = true;
 
 // Function to generate calendar days
@@ -41,7 +48,7 @@ function generateCalendarDays(year, month) {
 function handleDayClick(event) {
   const clickedDay = event.target;
   const dayNumber = clickedDay.textContent
-  const dayOfWeek = new Date(currentYear, currentMonth, dayNumber).getDay(0);
+  const dayOfWeek = new Date(currentYear, currentMonth, dayNumber).getDay();
 
   // Check if the clicked day is Saturday or Sunday
   if (dayOfWeek === 0 || dayOfWeek === 6) {
@@ -58,10 +65,16 @@ function handleDayClick(event) {
     const selectedMonth = parseInt(clickedDay.getAttribute('data-month'));
     const selectedDay = dayNumber;
 
-    // Create UTC Date from the clicked date
-    const selectedStartDateUtc = new Date(Date.UTC(selectedYear, selectedMonth, selectedDay)).toISOString();
+    // Create local date object from the clicked date for updating the HTML
+    const selectedStartDateInfo = new Date(selectedYear, selectedMonth, selectedDay);
+    // Create UTC date object for api calls
+    selectedStartDateUTC = new Date(Date.UTC(selectedYear, selectedMonth, selectedDay));
 
     isSelectingStartDate = false;
+
+    // Update the HTML element to show selected start date
+    const selectedStartDateElement = document.getElementById('selected-start-date');
+    selectedStartDateElement.textContent = `Selected Start Date: ${selectedStartDateInfo.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
   } else {
     selectedEndDate = clickedDay;
 
@@ -71,9 +84,11 @@ function handleDayClick(event) {
     const selectedMonth = parseInt(clickedDay.getAttribute('data-month'));
     const selectedDay = dayNumber;
 
-    // Create UTC Date from the clicked date
-    const selectedEndDateUtc = new Date(Date.UTC(selectedYear, selectedMonth,selectedDay)).toISOString();
-    
+    // Create local date object from the clicked date for updating the HTML
+    const selectedEndDateInfo = new Date(selectedYear, selectedMonth,selectedDay);
+    // Create UTC date object for api calls
+    selectedEndDateUtc = new Date(Date.UTC(selectedYear, selectedMonth, selectedDay));
+
     // Highlight dates between start and end dates
     const startDateIndex = parseInt(selectedStartDate.textContent);
     const endDateIndex = parseInt(selectedEndDate.textContent);
@@ -94,8 +109,10 @@ function handleDayClick(event) {
         if (dayOfWeekToHighlight !== 0 && dayOfWeekToHighlight !== 6) {
           dayToHighlight.classList.add('selected');
         }
-        console.log(dayOfWeekToHighlight)
       }
+    // Update the HTML element
+    const selectedEndDateElement = document.getElementById('selected-end-date');
+    selectedEndDateElement.textContent = `Selected End Date: ${selectedEndDateInfo.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`;
     } else {
       console.log('End date must be later than start date')
       selectedEndDate.classList.remove('selected');
