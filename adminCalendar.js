@@ -301,25 +301,57 @@ getAppointmentsButton.addEventListener('click', () => {
 
 // Function to fetch appointments
 function fetchAppointments(startDate, endDate) {
-  const appointments = fetch(`${baseUrl}calendar/appointment/${startDate}/${endDate}`)
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
+  fetch(`${baseUrl}calendar/appointment/${startDate}/${endDate}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      const bookedAppointments = data.bookedAppointments;
+      console.log(bookedAppointments)
+    })
+    .catch(error => {
+      console.error('Error fetching appointments', error);
     }
-    return response.json();
-  })
-  .then(data => {
-    const bookedAppointments = data.bookedAppointments;
-    console.log(bookedAppointments)
-  })
-  .catch(error => {
-    console.error('Error fetching appointments', error);
-  });
+  );
 }
 
 getBlockedTimesButton.addEventListener('click', () => {
-  console.log('getBlockedTimes click')
+  if (!selectedStartDateUtc && !selectedEndDateUtc) {
+    console.log('You must select a start and end date')
+    return;
+  }
+
+  if (selectedStartTime) {
+    updateSelectedStartTime();
+  }
+
+  if (selectedEndTime) {
+    updateSelectedEndTime();
+  }
+
+  fetchBlockedTimes(selectedStartDateUtc, selectedEndDateUtc);
 });
+
+function fetchBlockedTimes(startDate, endDate) {
+  fetch(`${baseUrl}admin/block-times/times/${startDate}/${endDate}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      const blockedTimes = data.blockedTimes;
+      console.log(blockedTimes);
+    })
+    .catch(error => {
+      console.error('Error fetching appointments', error);
+    }
+  );
+}
 
 blockTimesButton.addEventListener('click', () => {
   console.log('blockTimes click')
@@ -329,3 +361,23 @@ unblockTimesButton.addEventListener('click', () => {
   console.log('unblockTimes click')
 });
 
+// function to update selectedStartTime
+function updateSelectedStartTime() {
+  // Create new Date objects using the selected date and time
+  const selectedStartDateTime = new Date(selectedStartDateUtc);
+  selectedStartDateTime.setUTCHours(Number(selectedStartTime.slice(0, 2)));
+  selectedStartDateTime.setUTCMinutes(Number(selectedStartTime.slice(3, 5)));
+
+  // Update the selected date and time
+  selectedStartDateUtc = selectedStartDateTime.toISOString();
+}
+
+function updateSelectedEndTime() {
+  // Create new Date objects using the selected date and time
+  const selectedEndDateTime = new Date(selectedEndDateUtc);
+  selectedEndDateTime.setUTCHours(Number(selectedEndTime.slice(0, 2)));
+  selectedEndDateTime.setUTCMinutes(Number(selectedEndTime.slice(3, 5)));
+
+  // Update the selected date and time
+  selectedEndDateUtc = selectedEndDateTime.toISOString();
+}
