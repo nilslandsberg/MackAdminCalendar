@@ -271,6 +271,7 @@ const getBlockedTimesButton = document.getElementById('get-blocked-times-button'
 const blockTimesButton = document.getElementById('block-times-button');
 const unblockTimesButton = document.getElementById('unblock-times-button');
 
+// GET APPOINTMENTS
 getAppointmentsButton.addEventListener('click', () => {
   if (!selectedStartDateUtc && !selectedEndDateUtc) {
     console.log('You must select a start and end date')
@@ -278,23 +279,11 @@ getAppointmentsButton.addEventListener('click', () => {
   }
 
   if (selectedStartTime) {
-    // Create new Date objects using the selected date and time
-    const selectedStartDateTime = new Date(selectedStartDateUtc);
-    selectedStartDateTime.setUTCHours(Number(selectedStartTime.slice(0, 2)));
-    selectedStartDateTime.setUTCMinutes(Number(selectedStartTime.slice(3, 5)));
-
-    // Update the selected date and time
-    selectedStartDateUtc = selectedStartDateTime.toISOString();
+    updateSelectedStartTime();
   }
 
   if (selectedEndTime) {
-    // Create new Date objects using the selected date and time
-    const selectedEndDateTime = new Date(selectedEndDateUtc);
-    selectedEndDateTime.setUTCHours(Number(selectedEndTime.slice(0, 2)));
-    selectedEndDateTime.setUTCMinutes(Number(selectedEndTime.slice(3, 5)));
-
-    // Update the selected date and time
-    selectedEndDateUtc = selectedEndDateTime.toISOString();
+    updateSelectedEndTime();
   }
   fetchAppointments(selectedStartDateUtc, selectedEndDateUtc);
 });
@@ -318,6 +307,7 @@ function fetchAppointments(startDate, endDate) {
   );
 }
 
+// GET BLOCKED TIMES
 getBlockedTimesButton.addEventListener('click', () => {
   if (!selectedStartDateUtc && !selectedEndDateUtc) {
     console.log('You must select a start and end date')
@@ -353,13 +343,58 @@ function fetchBlockedTimes(startDate, endDate) {
   );
 }
 
+// POST - BLOCK TIMES - If the client wants to block a full day - times are not needed
 blockTimesButton.addEventListener('click', () => {
-  console.log('blockTimes click')
+  if (!selectedStartDateUtc && !selectedEndDateUtc) {
+    console.log('You must select a start and end date')
+    return;
+  }
+
+  if (selectedStartTime) {
+    updateSelectedStartTime();
+  }
+
+  if (selectedEndTime) {
+    updateSelectedEndTime();
+  }
+
+  const reqBody = {
+    reqStartDate: selectedStartDateUtc,
+    reqEndDate: selectedEndDateUtc
+  }
+
+  console.log(reqBody);
+
+  blockTimes(`${baseUrl}/admin/block-times`, reqBody)
+    .then(data => {
+      console.log('POST request successful', data);
+    })
 });
 
+function blockTimes(url, body) {
+  return fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body),
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .catch(error => {
+    console.error('Error making POST request', error)
+  })
+}
+
+// POST - UNBLOCK TIMES
 unblockTimesButton.addEventListener('click', () => {
   console.log('unblockTimes click')
 });
+
 
 // function to update selectedStartTime
 function updateSelectedStartTime() {
