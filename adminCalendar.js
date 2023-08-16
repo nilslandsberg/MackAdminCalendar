@@ -158,12 +158,10 @@ let selectedEndTime = null;
 // Event listeners for dropdown menus
 startTimeDropdown.addEventListener('change', (e) => {
   selectedStartTime = e.target.value;
-  console.log(`Selected Start Time: ${selectedStartTime}`);
 })
 
 endTimeDropdown.addEventListener('change', (e) => {
   selectedEndTime = e.target.value;
-  console.log(`Selected End Time: ${selectedEndTime}`);
 })
 
 // SELECTING START AND END DATES
@@ -274,6 +272,30 @@ const blockTimesButton = document.getElementById('block-times-button');
 const unblockTimesButton = document.getElementById('unblock-times-button');
 
 getAppointmentsButton.addEventListener('click', () => {
+  if (!selectedStartDateUtc && !selectedEndDateUtc) {
+    console.log('You must select a start and end date')
+    return;
+  }
+
+  if (selectedStartTime) {
+    // Create new Date objects using the selected date and time
+    const selectedStartDateTime = new Date(selectedStartDateUtc);
+    selectedStartDateTime.setUTCHours(Number(selectedStartTime.slice(0, 2)));
+    selectedStartDateTime.setUTCMinutes(Number(selectedStartTime.slice(3, 5)));
+
+    // Update the selected date and time
+    selectedStartDateUtc = selectedStartDateTime.toISOString();
+  }
+
+  if (selectedEndTime) {
+    // Create new Date objects using the selected date and time
+    const selectedEndDateTime = new Date(selectedEndDateUtc);
+    selectedEndDateTime.setUTCHours(Number(selectedEndTime.slice(0, 2)));
+    selectedEndDateTime.setUTCMinutes(Number(selectedEndTime.slice(3, 5)));
+
+    // Update the selected date and time
+    selectedEndDateUtc = selectedEndDateTime.toISOString();
+  }
   fetchAppointments(selectedStartDateUtc, selectedEndDateUtc);
 });
 
@@ -294,6 +316,7 @@ function fetchAppointments(startDate, endDate) {
     console.error('Error fetching appointments', error);
   });
 }
+
 getBlockedTimesButton.addEventListener('click', () => {
   console.log('getBlockedTimes click')
 });
