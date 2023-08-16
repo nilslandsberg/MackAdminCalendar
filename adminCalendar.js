@@ -1,3 +1,4 @@
+// CALENDAR DISPLAY/INTERACTION
 // Get a reference to the calendar grid
 const calendarGrid = document.querySelector('.calendar-grid');
 
@@ -7,42 +8,146 @@ let selectedStartDateUtc = null;
 let selectedEndDate = null;
 let selectedEndDateUtc = null;
 
-const baseUrl = 'http://MackScheduler.eba-najyqvxe.us-east-2.elasticbeanstalk.com/api/';
-
-// flag for toggle
-let isSelectingStartDate = true;
+// Get the current date
+const currentDate = new Date();
+let currentYear = currentDate.getFullYear();
+let currentMonth = currentDate.getMonth();
 
 // Function to generate calendar days
 function generateCalendarDays(year, month) {
-    // Clear the existing days
-    calendarGrid.innerHTML = '';
+  // Clear the existing days
+  calendarGrid.innerHTML = '';
 
-    // Get the number of days in the specified month
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
+  // Get the number of days in the specified month
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-    // Get the first day of the month (0-6 for Sunday-Saturday)
-    const firstDay = new Date(year, month, 1).getDay();
+  // Get the first day of the month (0-6 for Sunday-Saturday)
+  const firstDay = new Date(year, month, 1).getDay();
 
-    // Add empty cells for previous month days
-    for (let i = 0; i < firstDay; i++) {
-        const emptyCell = document.createElement('div');
-        emptyCell.classList.add('day', 'empty');
-        calendarGrid.appendChild(emptyCell);
-    }
+  // Add empty cells for previous month days
+  for (let i = 0; i < firstDay; i++) {
+      const emptyCell = document.createElement('div');
+      emptyCell.classList.add('day', 'empty');
+      calendarGrid.appendChild(emptyCell);
+  }
 
-    // Add the days for the current month
-    for (let day = 1; day <= daysInMonth; day++) {
-        const calendarDay = document.createElement('div');
-        calendarDay.classList.add('day');
-        calendarDay.textContent = day;
+  // Add the days for the current month
+  for (let day = 1; day <= daysInMonth; day++) {
+      const calendarDay = document.createElement('div');
+      calendarDay.classList.add('day');
+      calendarDay.textContent = day;
 
-        // Store the year and month data attributes on each calendar day
-        calendarDay.setAttribute('data-year', year);
-        calendarDay.setAttribute('data-month', month);
-        calendarDay.setAttribute('data-day', day);
-        calendarGrid.appendChild(calendarDay);
-    }
+      // Store the year and month data attributes on each calendar day
+      calendarDay.setAttribute('data-year', year);
+      calendarDay.setAttribute('data-month', month);
+      calendarDay.setAttribute('data-day', day);
+      calendarGrid.appendChild(calendarDay);
+  }
 }
+
+// Display the current month initially
+generateCalendarDays(currentYear, currentMonth);
+document.getElementById('current-month').textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentDate);
+
+// Button event listeners to navigate to previous and next months
+document.getElementById('prev-month-btn').addEventListener('click', () => {
+  currentMonth--;
+  if (currentMonth < 0) {
+      currentYear--;
+      currentMonth = 11; 
+  }
+  generateCalendarDays(currentYear, currentMonth);
+  document.getElementById('current-month').textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date(currentYear, currentMonth, 1));
+
+  // Update the click event listeners for the days after changing the month
+  updateClickEventListeners();
+});
+
+document.getElementById('next-month-btn').addEventListener('click', () => {
+  currentMonth++;
+  if (currentMonth > 11) {
+      currentYear++;
+      currentMonth = 0; // January (0-based)
+  }
+  generateCalendarDays(currentYear, currentMonth);
+  document.getElementById('current-month').textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date(currentYear, currentMonth, 1));
+
+  // Update the click event listeners for the days after changing the month
+  updateClickEventListeners();
+});
+
+// Function to update click event listeners for the days after changing the month
+function updateClickEventListeners() {
+  const calendarDays = document.querySelectorAll('.day:not(.empty)');
+  calendarDays.forEach(day => {
+      day.removeEventListener('click', handleDayClick); // Remove the old click event listener
+      day.addEventListener('click', handleDayClick); // Add the updated click event listener
+  });
+}
+
+// Make dates clickable - do not allow empty squares to be clicked
+const calendarDays = document.querySelectorAll('.day:not(.empty');
+calendarDays.forEach(day => {
+  day.addEventListener('click', handleDayClick);
+});
+
+// POPULATE THE DROPDOWN MENUS
+function populateDropdownWithTimes() {
+  // Get the user's time zone
+  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  // Options to display times in AM/PM format
+  const userTimeZoneOptions = {
+    timeZone: userTimeZone,
+    hour12: true,
+    hour: 'numeric',
+    minute: 'numeric',
+  };
+
+  const dropdownStart = document.getElementById('start-time-dropdown');
+  const dropdownEnd = document.getElementById('end-time-dropdown');
+
+  times.forEach(time => {
+    // Convert the UTC time string into a Date object
+    const utcDate = new Date(time);
+    // Convert to the user's local time
+    const localTime = utcDate.toLocaleTimeString('en-US', userTimeZoneOptions);
+
+    // Create an option element
+    const option = document.createElement('option');
+    option.textContent = localTime;
+    option.value = time; // Store the UTC time string as the option's value
+
+    // Append the option to the dropdowns
+    dropdownStart.appendChild(option.cloneNode(true));
+    dropdownEnd.appendChild(option.cloneNode(true));
+  });
+}
+
+// Set the start and end times in UTC (9am-5pm EST)
+const times = [
+  "2023-08-02T13:00:00Z",
+  "2023-08-02T13:30:00Z",
+  "2023-08-02T14:00:00Z",
+  "2023-08-02T14:30:00Z",
+  "2023-08-02T15:00:00Z",
+  "2023-08-02T15:30:00Z",
+  "2023-08-02T16:00:00Z",
+  "2023-08-02T16:30:00Z",
+  "2023-08-02T17:00:00Z",
+  "2023-08-02T17:30:00Z",
+  "2023-08-02T18:00:00Z",
+  "2023-08-02T18:30:00Z",
+  "2023-08-02T19:00:00Z",
+  "2023-08-02T19:30:00Z",
+  "2023-08-02T20:00:00Z",
+  "2023-08-02T20:30:00Z",
+]
+// Call the function to populate the dropdown menus
+populateDropdownWithTimes();
+
+// SELECTING START AND END DATES
+// flag for toggle
+let isSelectingStartDate = true;
 
 // Function to handle click events on calendar days
 function handleDayClick(event) {
@@ -132,53 +237,28 @@ function clearSelection () {
   })
 }
 
-// Function to update click event listeners for the days after changing the month
-function updateClickEventListeners() {
-  const calendarDays = document.querySelectorAll('.day:not(.empty)');
-  calendarDays.forEach(day => {
-      day.removeEventListener('click', handleDayClick); // Remove the old click event listener
-      day.addEventListener('click', handleDayClick); // Add the updated click event listener
-  });
-}
+// API Calls
+// base URL
+const baseUrl = 'http://MackScheduler.eba-najyqvxe.us-east-2.elasticbeanstalk.com/api/';
 
-// Get the current date
-const currentDate = new Date();
-let currentYear = currentDate.getFullYear();
-let currentMonth = currentDate.getMonth();
-
-// Display the current month initially
-generateCalendarDays(currentYear, currentMonth);
-document.getElementById('current-month').textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentDate);
-
-// Button event listeners to navigate to previous and next months
-document.getElementById('prev-month-btn').addEventListener('click', () => {
-  currentMonth--;
-  if (currentMonth < 0) {
-      currentYear--;
-      currentMonth = 11; 
-  }
-  generateCalendarDays(currentYear, currentMonth);
-  document.getElementById('current-month').textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date(currentYear, currentMonth, 1));
-
-  // Update the click event listeners for the days after changing the month
-  updateClickEventListeners();
+// Get references to the buttons
+const getAppointmentsButton = document.getElementById('get-appointments-button');
+const getBlockedTimesButton = document.getElementById('get-blocked-times-button');
+const blockTimesButton = document.getElementById('block-times-button');
+const unblockTimesButton = document.getElementById('unblock-times-button');
+getAppointmentsButton.addEventListener('click', () => {
+  console.log('getAppointments click')
 });
 
-document.getElementById('next-month-btn').addEventListener('click', () => {
-  currentMonth++;
-  if (currentMonth > 11) {
-      currentYear++;
-      currentMonth = 0; // January (0-based)
-  }
-  generateCalendarDays(currentYear, currentMonth);
-  document.getElementById('current-month').textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date(currentYear, currentMonth, 1));
-
-  // Update the click event listeners for the days after changing the month
-  updateClickEventListeners();
+getBlockedTimesButton.addEventListener('click', () => {
+  console.log('getBlockedTimes click')
 });
 
-// Make dates clickable - do not allow empty squares to be clicked
-const calendarDays = document.querySelectorAll('.day:not(.empty');
-calendarDays.forEach(day => {
-  day.addEventListener('click', handleDayClick);
+blockTimesButton.addEventListener('click', () => {
+  console.log('blockTimes click')
 });
+
+unblockTimesButton.addEventListener('click', () => {
+  console.log('unblockTimes click')
+});
+
