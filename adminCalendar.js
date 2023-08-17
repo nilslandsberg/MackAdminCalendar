@@ -390,9 +390,50 @@ async function blockTimes(url, body) {
 
 // POST - UNBLOCK TIMES
 unblockTimesButton.addEventListener('click', () => {
-  console.log('unblockTimes click')
+  if (!selectedStartDateUtc && !selectedEndDateUtc) {
+    console.log('You must select a start and end date')
+    return;
+  }
+
+  if (selectedStartTime) {
+    updateSelectedStartTime();
+  }
+
+  if (selectedEndTime) {
+    updateSelectedEndTime();
+  }
+
+  const reqBody = {
+    reqStartDate: selectedStartDateUtc,
+    reqEndDate: selectedEndDateUtc
+  }
+
+  unblockTimes(`${baseUrl}/admin/block-times`, reqBody)
+  .then(data => {
+    console.log('DELETE request successful', data);
+  })
 });
 
+async function unblockTimes(url, body) {
+  try {
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error making POST request', error);
+  }
+}
 
 // function to update selectedStartTime
 function updateSelectedStartTime() {
