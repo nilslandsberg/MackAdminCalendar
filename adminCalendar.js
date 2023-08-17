@@ -299,7 +299,11 @@ async function fetchAppointments(startDate, endDate) {
 
     const data = await response.json();
     const bookedAppointments = data.bookedAppointments;
-    console.log(bookedAppointments);
+    if (bookedAppointments.length === 0) {
+      console.log('No appointments found during the requested date/time range');
+    } else {
+      console.log(bookedAppointments);
+    }
   } catch (error) {
     console.error('Error fetching appointments', error);
   }
@@ -333,7 +337,11 @@ async function fetchBlockedTimes(startDate, endDate) {
 
     const data = await response.json();
     const blockedTimes = data.blockedTimes;
-    console.log(blockedTimes);
+    if (blockedTimes.length === 0) {
+      console.log('No blocked times found during the requested date/time range');
+    } else {
+      console.log(blockedTimes);
+    }
   } catch (error) {
     console.error('Error fetching appointments', error);
   }
