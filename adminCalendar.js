@@ -290,7 +290,7 @@ getAppointmentsButton.addEventListener('click', () => {
 
 // Function to fetch appointments
 function fetchAppointments(startDate, endDate) {
-  fetch(`${baseUrl}calendar/appointment/${startDate}/${endDate}`)
+  fetch(`${baseUrl}admin/appointment/${startDate}/${endDate}`)
     .then(response => {
       if (!response.ok) {
         throw new Error('Network response was not ok');
