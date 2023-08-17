@@ -270,6 +270,7 @@ const getAppointmentsButton = document.getElementById('get-appointments-button')
 const getBlockedTimesButton = document.getElementById('get-blocked-times-button');
 const blockTimesButton = document.getElementById('block-times-button');
 const unblockTimesButton = document.getElementById('unblock-times-button');
+const getClientsButton = document.getElementById('get-clients-button');
 
 // GET APPOINTMENTS
 getAppointmentsButton.addEventListener('click', () => {
@@ -396,7 +397,7 @@ async function blockTimes(url, body) {
 }
 
 
-// POST - UNBLOCK TIMES
+// DELETE - UNBLOCK TIMES
 unblockTimesButton.addEventListener('click', () => {
   if (!selectedStartDateUtc && !selectedEndDateUtc) {
     console.log('You must select a start and end date')
@@ -442,6 +443,28 @@ async function unblockTimes(url, body) {
     console.error('Error making POST request', error);
   }
 }
+
+// GET - ALL CLIENTS
+getClientsButton.addEventListener('click', () => {
+  getClients();
+})
+
+async function getClients() {
+  try {
+    const response = await fetch(`${baseUrl}admin/clients`);
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const data = await response.json();
+    const clients = data.clients;
+    console.log(clients);
+  } catch (error) {
+    console.error('Error fetching appointments', error);
+  }
+}
+
 
 // function to update selectedStartTime
 function updateSelectedStartTime() {
