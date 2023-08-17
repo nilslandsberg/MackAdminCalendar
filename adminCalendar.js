@@ -289,22 +289,20 @@ getAppointmentsButton.addEventListener('click', () => {
 });
 
 // Function to fetch appointments
-function fetchAppointments(startDate, endDate) {
-  fetch(`${baseUrl}admin/appointment/${startDate}/${endDate}`)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-    })
-    .then(data => {
-      const bookedAppointments = data.bookedAppointments;
-      console.log(bookedAppointments)
-    })
-    .catch(error => {
-      console.error('Error fetching appointments', error);
+async function fetchAppointments(startDate, endDate) {
+  try {
+    const response = await fetch(`${baseUrl}admin/appointment/${startDate}/${endDate}`);
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
     }
-  );
+
+    const data = await response.json();
+    const bookedAppointments = data.bookedAppointments;
+    console.log(bookedAppointments);
+  } catch (error) {
+    console.error('Error fetching appointments', error);
+  }
 }
 
 // GET BLOCKED TIMES
@@ -325,23 +323,22 @@ getBlockedTimesButton.addEventListener('click', () => {
   fetchBlockedTimes(selectedStartDateUtc, selectedEndDateUtc);
 });
 
-function fetchBlockedTimes(startDate, endDate) {
-  fetch(`${baseUrl}admin/block-times/times/${startDate}/${endDate}`)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-    })
-    .then(data => {
-      const blockedTimes = data.blockedTimes;
-      console.log(blockedTimes);
-    })
-    .catch(error => {
-      console.error('Error fetching appointments', error);
+async function fetchBlockedTimes(startDate, endDate) {
+  try {
+    const response = await fetch(`${baseUrl}admin/block-times/times/${startDate}/${endDate}`);
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
     }
-  );
+
+    const data = await response.json();
+    const blockedTimes = data.blockedTimes;
+    console.log(blockedTimes);
+  } catch (error) {
+    console.error('Error fetching appointments', error);
+  }
 }
+
 
 // POST - BLOCK TIMES - If the client wants to block a full day - times are not needed
 blockTimesButton.addEventListener('click', () => {
@@ -363,32 +360,33 @@ blockTimesButton.addEventListener('click', () => {
     reqEndDate: selectedEndDateUtc
   }
 
-  console.log(reqBody);
-
   blockTimes(`${baseUrl}/admin/block-times`, reqBody)
     .then(data => {
       console.log('POST request successful', data);
     })
 });
 
-function blockTimes(url, body) {
-  return fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(body),
-  })
-  .then(response => {
+async function blockTimes(url, body) {
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body),
+    });
+
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
-    return response.json();
-  })
-  .catch(error => {
-    console.error('Error making POST request', error)
-  })
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error making POST request', error);
+  }
 }
+
 
 // POST - UNBLOCK TIMES
 unblockTimesButton.addEventListener('click', () => {
