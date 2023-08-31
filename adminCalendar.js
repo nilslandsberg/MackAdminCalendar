@@ -304,10 +304,55 @@ async function fetchAppointments(startDate, endDate) {
       console.log('No appointments found during the requested date/time range');
     } else {
       console.log(bookedAppointments);
+      renderAppointments(bookedAppointments);
     }
   } catch (error) {
     console.error('Error fetching appointments', error);
   }
+}
+
+function renderAppointments(appointments) {
+  const appointmentsContainer = document.getElementById("appointments-container");
+  appointmentsContainer.innerHTML = ""; // Clear previous content
+
+  appointments.forEach(appointment => {
+    const appointmentElement = document.createElement("div");
+    appointmentElement.className = "appointment";
+
+    const appointmentDate = new Date(appointment.date);
+    const appointmentDateString = appointmentDate.toLocaleString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    });
+
+    const appointmentTime = appointmentDate.toLocaleString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true
+    });
+
+    const clientInfo = appointment.client;
+    const truckToTour = appointment.truckToTour;
+    const webinarId = appointment.vimeoWebinarInfo.webinarId;
+
+    const appointmentContent = `
+      <div class="client-info">
+        <p><strong>Client:</strong> ${clientInfo.firstName} ${clientInfo.lastName}</p>
+        <p><strong>Email:</strong> ${clientInfo.email}</p>
+        <p><strong>Phone:</strong> ${clientInfo.businessPhone}</p>
+        <p><strong>Company:</strong> ${clientInfo.companyName}</p>
+      </div>
+      <div class="appointment-date">${appointmentDateString} - ${appointmentTime}</div>
+      <div class="truck-info">
+        <p><strong>Truck to Tour:</strong> ${truckToTour}</p>
+      </div>
+      <button class="view-webinar" data-webinar-id="${webinarId}">Reschedule/Cancel Webinar</button>
+    `;
+
+    appointmentElement.innerHTML = appointmentContent;
+    appointmentsContainer.appendChild(appointmentElement);
+  });
 }
 
 // GET BLOCKED TIMES
