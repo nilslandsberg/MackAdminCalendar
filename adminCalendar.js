@@ -366,7 +366,7 @@ function renderAppointments(appointments) {
 
     rescheduleWebinarButton.addEventListener("click", () => {
       console.log("show webinar", webinarId)
-      showModal();
+      openCalendarModal();
     });
 
     cancelWebinarButton.addEventListener("click", () => {
@@ -392,15 +392,87 @@ async function deleteAppointment(appointmentId, webinarId, appointmentElement) {
   }
 }
 
-function showModal() {
+function openCalendarModal() {
+  const modalCurrentDate = new Date();
+  const modalCurrentYear = modalCurrentDate.getFullYear();
+  const modalCurrentMonth = modalCurrentDate.getMonth();
+
+  currentMonthModal.textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric'}).format(modalCurrentDate);
+  generateCalendarDaysModal(modalCurrentYear, modalCurrentMonth);
+
   const modal = document.getElementById("reschedule-modal");
   modal.style.display = "block";
+
+ 
+  const modalContent = document.querySelector(".modal-content");
+
 }
 
 function hideModal() {
   const modal = document.getElementById("reschedule-modal");
   modal.style.display = "none";
 }
+
+// Calendar elements within the modal
+const calendarGridModal = document.querySelector('.calendar-grid-modal');
+const currentMonthModal = document.getElementById('current-month-modal');
+const prevMonthBtnModal = document.getElementById('prev-month-btn-modal');
+const nextMonthBtnModal = document.getElementById('next-month-btn-modal');
+
+function generateCalendarDaysModal(year, month) {
+  calendarGridModal.innerHTML = '';
+
+  // Get the number of days in the specified month
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  // Get the first day of the month (0-6 for Sunday-Saturday)
+  const firstDay = new Date(year, month, 1).getDay();
+
+  // Calculate the number of empty cells needed at the beginning of the calendar
+  const emptyCells = (firstDay + 6) % 7;
+
+  // Add empty cells for previous month days
+  for (let i = 0; i < emptyCells; i++) {
+    const emptyCell = document.createElement('div');
+    emptyCell.classList.add('day', 'empty');
+    calendarGridModal.appendChild(emptyCell);
+  }
+
+  // Add the days for the current month
+  for (let day = 1; day <= daysInMonth; day++) {
+    const calendarDay = document.createElement('div');
+    calendarDay.classList.add('day');
+    calendarDay.textContent = day;
+
+    // Store the year and month data attributes on each calendar day
+    calendarDay.setAttribute('data-year', year);
+    calendarDay.setAttribute('data-month', month);
+    calendarDay.setAttribute('data-day', day);
+    calendarGridModal.appendChild(calendarDay);
+  }
+}
+
+
+prevMonthBtnModal.addEventListener('click', () => {
+  currentMonth--;
+  if (currentMonth < 0) {
+      currentYear--;
+      currentMonth = 11; 
+  }
+
+  generateCalendarDaysModal(currentYear, currentMonth);
+  currentMonthModal.textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date(currentYear, currentMonth, 1));
+})
+
+nextMonthBtnModal.addEventListener('click', () => {
+  currentMonth++;
+  if (currentMonth > 11) {
+      currentYear++;
+      currentMonth = 0; // January (0-based)
+  }
+  generateCalendarDaysModal(currentYear, currentMonth);
+  currentMonthModal.textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date(currentYear, currentMonth, 1));
+});
 
 document.getElementById("reschedule-cancel").addEventListener("click", () => {
   hideModal();

@@ -53,4 +53,14 @@ body {
   background-color: #fff;
   padding: 20px;
   border-radius: 5px;
+  max-width: 400px; 
+  margin: 0 auto; 
+}
+
+.calendar-grid-modal {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr); /* 7 columns for each day */
+  gap: 5px;
+  max-width: 400px; /* Adjust this value as needed */
+  margin: 0 auto; /* Center the calendar within the modal */
 }

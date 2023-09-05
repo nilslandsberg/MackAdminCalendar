@@ -78,6 +78,25 @@
 
     <div id="reschedule-modal" class="modal">
       <div class="modal-content">
+       
+        <div class="calendar-header">
+          <button id="prev-month-btn-modal">&lt;</button>
+          <h2 id="current-month-modal"></h2>
+          <button id="next-month-btn-modal">&gt;</button>
+        </div>
+
+        <!-- Calendar grid for the modal -->
+        <div class="calendar-grid-modal">
+          <!-- Days of the week headers -->
+          <div class="day">Sun</div>
+          <div class="day">Mon</div>
+          <div class="day">Tue</div>
+          <div class="day">Wed</div>
+          <div class="day">Thu</div>
+          <div class="day">Fri</div>
+          <div class="day">Sat</div>
+          <!-- Calendar days will be populated by the JavaScript -->
+        </div>
         <!-- Add content for rescheduling here -->
         <select id="reschedule-time-dropdown">
           <option value="">Select a Time</option>
