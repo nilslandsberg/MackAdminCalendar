@@ -7,6 +7,7 @@ let selectedStartDate = null;
 let selectedStartDateUtc = null;
 let selectedEndDate = null;
 let selectedEndDateUtc = null;
+let selectedDate = null;
 
 // Get the current date
 const currentDate = new Date();
@@ -418,6 +419,12 @@ const calendarGridModal = document.querySelector('.calendar-grid-modal');
 const currentMonthModal = document.getElementById('current-month-modal');
 const prevMonthBtnModal = document.getElementById('prev-month-btn-modal');
 const nextMonthBtnModal = document.getElementById('next-month-btn-modal');
+const modalDropdown = document.getElementById('reschedule-time-dropdown');
+modalDropdown.addEventListener('change', handleTimeSelection);
+
+function handleTimeSelection() {
+  console.log('click');
+}
 
 function generateCalendarDaysModal(year, month) {
   calendarGridModal.innerHTML = '';
@@ -444,6 +451,8 @@ function generateCalendarDaysModal(year, month) {
     calendarDay.classList.add('day');
     calendarDay.textContent = day;
 
+    calendarDay.addEventListener('click', handleModalDayClick);
+
     // Store the year and month data attributes on each calendar day
     calendarDay.setAttribute('data-year', year);
     calendarDay.setAttribute('data-month', month);
@@ -452,6 +461,85 @@ function generateCalendarDaysModal(year, month) {
   }
 }
 
+function handleModalDayClick(event) {
+  const clickedDay = event.target;
+  const dayNumber = clickedDay.textContent;
+  const selectedYear = parseInt(clickedDay.getAttribute('data-year'));
+  const selectedMonth = parseInt(clickedDay.getAttribute('data-month'));
+  const selectedDay = parseInt(dayNumber);
+  const dayOfWeek = new Date(selectedYear, selectedMonth, selectedDay).getDay(0)
+
+  // Check if day is a Saturday or Sunday
+  if ( dayOfWeek === 0 || dayOfWeek === 1) {
+    return;
+  }
+
+  if (selectedDate !== null) {
+    selectedDate.classList.remove('selected');
+  }
+
+  selectedDate = clickedDay;
+  selectedDate.classList.add('selected');
+
+  const selectedDateUtc = new Date(Date.UTC(selectedYear, selectedMonth, selectedDay));
+
+  const selectedDateUtcString = selectedDateUtc.toISOString();
+
+  fetchAvailableTimes(selectedDateUtcString);
+}
+
+// Function to fetch available times from API
+function fetchAvailableTimes(selectedDate) {
+  const availableTimes = fetch(`${baseUrl}calendar/times/${selectedDate}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      populateDropdown(data.availableTimes); 
+    })
+    .catch(error => {
+      console.error('Error fetching available times: ', error);
+    })
+}
+
+// Function to populate the dropdown menu with available times
+function populateDropdown(times) {
+  
+  modalDropdown.innerHTML = ''; // Clear previous entries
+
+  if (times.length === 0) {
+    // If no available times, show the default option
+    const defaultOption = document.createElement('option');
+    defaultOption.textContent = 'No Times Available. Select Another Date';
+    modalDropdown.appendChild(defaultOption);
+  } else {
+    // Populate the dropdown with available times
+    // Get the user's time zone
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    // Variable to display times in am/pm format
+    const userTimeZoneOptions = {
+      timeZone: userTimeZone,
+      hour12: true,
+      hour: 'numeric',
+      minute: 'numeric',
+    }
+
+    times.forEach(time => {
+      // Convert the date string into UTC Date
+      const utcDate = new Date(time);
+      // Set the time string to the user's local time zone
+      const userTimeZoneTime = utcDate.toLocaleString('en-US', userTimeZoneOptions);
+      console.log(userTimeZoneTime)
+      const option = document.createElement('option');
+      option.textContent = userTimeZoneTime;
+      option.setAttribute('data-utc', time); // Stores the UTC string for access when selecting
+      modalDropdown.appendChild(option);
+    });
+  }
+}
 
 prevMonthBtnModal.addEventListener('click', () => {
   currentMonth--;
