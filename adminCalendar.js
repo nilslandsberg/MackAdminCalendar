@@ -347,13 +347,70 @@ function renderAppointments(appointments) {
       <div class="truck-info">
         <p><strong>Truck to Tour:</strong> ${truckToTour}</p>
       </div>
-      <button class="view-webinar" data-webinar-id="${webinarId}">Reschedule/Cancel Webinar</button>
+      <button class="start-webinar" data-webinar-id="${webinarId}">Start Webinar</button>
+      <button class="reschedule-webinar" data-webinar-id="${webinarId}">Reschedule Webinar</button>
+      <button class="cancel-webinar" data-webinar-id="${webinarId}">Cancel Webinar</button>
     `;
-
+    
+    
     appointmentElement.innerHTML = appointmentContent;
     appointmentsContainer.appendChild(appointmentElement);
+
+    const startWebinarButton = appointmentElement.querySelector(".start-webinar");
+    const rescheduleWebinarButton = appointmentElement.querySelector(".reschedule-webinar");
+    const cancelWebinarButton = appointmentElement.querySelector(".cancel-webinar");
+
+    startWebinarButton.addEventListener("click", () => {
+      const webinarLink = `https://vimeo.com/manage/webinars/${webinarId}`;
+      window.location.href = webinarLink;
+    });
+
+    rescheduleWebinarButton.addEventListener("click", () => {
+      console.log("show webinar", webinarId)
+      showModal();
+    });
+
+    cancelWebinarButton.addEventListener("click", () => {
+      console.log("Cancel Webinar #", webinarId);
+    })
   });
 }
+
+function showModal() {
+  const modal = document.getElementById("reschedule-modal");
+  modal.style.display = "block";
+}
+
+function hideModal() {
+  const modal = document.getElementById("reschedule-modal");
+  modal.style.display = "none";
+}
+
+document.getElementById("reschedule-cancel").addEventListener("click", () => {
+  hideModal();
+})
+
+document.getElementByID("reschedule-confirm").addEventListener("click", () => {
+  // Handle rescheduliing logic here
+  hideModal();
+})
+
+function showRescheduleDropdown(webinarId, appointmentElement) {
+  const rescheduleWebinarContainer = document.getElementById("reschedule-webinar-container");
+  const rescheduleTimeDropdown = document.getElementById("reschedule-time-dropdown");
+
+  // Calculate the position of the container above the appointment
+  const appointmentRect = appointmentElement.getBoundingClientRect();
+  rescheduleWebinarContainer.style.display = "block";
+  rescheduleWebinarContainer.style.position = "absolute";
+  rescheduleWebinarContainer.style.left = `${appointmentRect.left}px`;
+  rescheduleWebinarContainer.style.top = `${appointmentRect.top - rescheduleWebinarContainer.clientHeight}px`;
+
+  // Populate the dropdown with reschedule time options here
+  // Example: You can use the same logic as in populateDropdownWithTimes function
+  // populateDropdownWithTimes(rescheduleTimeDropdown);
+}
+
 
 // GET BLOCKED TIMES
 getBlockedTimesButton.addEventListener('click', () => {

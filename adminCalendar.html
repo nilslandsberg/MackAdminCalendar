@@ -47,8 +47,16 @@
     <div id="get-appointments-button">
       <button>Get Appointments</button>
     </div>
+
+    <div id="reschedule-webinar-container" style="display: none">
+      <p>Select a date:</p>
+      <select id="reschedule-time-dropdown">
+        <option value="">Select a Time</option>
+      </select>
+    </div>
+
     <div id="appointments-container">
-      
+
     </div>
     <br>
     <div id="get-blocked-times-button">
@@ -65,6 +73,18 @@
     <br>
     <div id="get-clients-button">
       <button>Get Clients</button>
+    </div>
+
+    <div id="reschedule-modal" class="modal">
+      <div class="modal-content">
+        <!-- Add content for rescheduling here -->
+        <select id="reschedule-time-dropdown">
+          <option value="">Select a Time</option>
+          <!-- Populate with available times -->
+        </select>
+        <button id="reschedule-confirm">Reschedule</button>
+        <button id="reschedule-cancel">Cancel</button>
+      </div>
     </div>
 
     <script src="adminCalendar.js"></script>
