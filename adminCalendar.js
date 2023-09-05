@@ -303,7 +303,6 @@ async function fetchAppointments(startDate, endDate) {
     if (bookedAppointments.length === 0) {
       console.log('No appointments found during the requested date/time range');
     } else {
-      console.log(bookedAppointments);
       renderAppointments(bookedAppointments);
     }
   } catch (error) {
@@ -372,8 +371,25 @@ function renderAppointments(appointments) {
 
     cancelWebinarButton.addEventListener("click", () => {
       console.log("Cancel Webinar #", webinarId);
+      console.log(appointment._id);
+      deleteAppointment(appointment._id, webinarId, appointmentElement)
     })
   });
+}
+
+async function deleteAppointment(appointmentId, webinarId, appointmentElement) {
+  try {
+    const response = await axios.delete(`${baseUrl}admin/appointment/${appointmentId}/${webinarId}`);
+
+    if (response.status === 200) {
+    // Remove the appointment element from the DOM
+    appointmentElement.parentNode.removeChild(appointmentElement)
+    } else {
+      console.error('Error deleting appointment: ', response.status);
+    }
+  } catch (error) {
+    console.error('Error deleting appointment: ', error);
+  }
 }
 
 function showModal() {
@@ -390,7 +406,7 @@ document.getElementById("reschedule-cancel").addEventListener("click", () => {
   hideModal();
 })
 
-document.getElementByID("reschedule-confirm").addEventListener("click", () => {
+document.getElementById("reschedule-confirm").addEventListener("click", () => {
   // Handle rescheduliing logic here
   hideModal();
 })
