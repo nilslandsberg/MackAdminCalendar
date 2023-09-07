@@ -62,10 +62,13 @@ const prevMonthBtnModal = document.getElementById('prev-month-btn-modal');
 const nextMonthBtnModal = document.getElementById('next-month-btn-modal');
 const modalDropdown = document.getElementById('reschedule-time-dropdown');
 
-// Make dates clickable - do not allow empty squares to be clicked
-const calendarDays = document.querySelectorAll('.day:not(.empty');
-calendarDays.forEach(day => {
-  day.addEventListener('click', handleDayClick);
+const calendarDays = document.querySelectorAll('.day');
+console.log(calendarDays);
+calendarGrid.addEventListener('click', function (event) {
+  const clickedDay = event.target;
+  if (clickedDay.classList.contains('day')) {
+    handleDayClick(event);
+  }
 });
 
 document.getElementById('current-month').textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentDate);
@@ -81,8 +84,6 @@ document.getElementById('prev-month-btn').addEventListener('click', () => {
   generateCalendarDays(currentYear, currentMonth);
   document.getElementById('current-month').textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date(currentYear, currentMonth, 1));
 
-  // Update the click event listeners for the days after changing the month
-  updateClickEventListeners();
   populateDropdownWithTimes(currentYear, currentMonth);
 });
 
@@ -96,8 +97,6 @@ document.getElementById('next-month-btn').addEventListener('click', () => {
   generateCalendarDays(currentYear, currentMonth);
   document.getElementById('current-month').textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date(currentYear, currentMonth, 1));
 
-  // Update the click event listeners for the days after changing the month
-  updateClickEventListeners();
   populateDropdownWithTimes(currentYear, currentMonth);
 });
 
@@ -252,14 +251,6 @@ function generateCalendarDays(year, month) {
   }
 }
 
-// Function to update click event listeners for the days after changing the month
-function updateClickEventListeners() {
-  const calendarDays = document.querySelectorAll('.day:not(.empty)');
-  calendarDays.forEach(day => {
-      day.removeEventListener('click', handleDayClick); // Remove the old click event listener
-      day.addEventListener('click', handleDayClick); // Add the updated click event listener
-  });
-}
 
 // Function to populate dropdown menus with times
 function populateDropdownWithTimes(year, month) {
@@ -297,6 +288,9 @@ function handleDayClick(event) {
   const dayOfWeek = new Date(currentYear, currentMonth, dayNumber).getDay();
   const selectedEndDateElement = document.getElementById('selected-end-date');
 
+  if (!clickedDay) {
+    return;
+  }
   // Check if the clicked day is Saturday or Sunday
   if (dayOfWeek === 0 || dayOfWeek === 6) {
     return;  // Stop the function if the clicked day is Saturday or Sunday
@@ -325,7 +319,7 @@ function handleDayClick(event) {
     selectedStartDateElement.textContent = `Selected Start Date: ${selectedStartDateInfo.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
   } else {
     selectedEndDate = clickedDay;
-
+    
     // Get the first day of the month (0-6 for Sunday-Saturday)
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
 
@@ -333,7 +327,7 @@ function handleDayClick(event) {
     const selectedYear = parseInt(clickedDay.getAttribute('data-year'));
     const selectedMonth = parseInt(clickedDay.getAttribute('data-month'));
     const selectedDay = dayNumber;
-
+    
     // Create local date object for updating the HTML
     const selectedEndDateInfo = new Date(selectedYear, selectedMonth,selectedDay);
     // Create UTC date object string for api calls
@@ -344,17 +338,21 @@ function handleDayClick(event) {
     const endDateIndex = parseInt(selectedEndDate.textContent);
    
     if (endDateIndex >= startDateIndex) {
+      // Find the index of the selected start date within calendarDays NodeList
+      const startIndex = Array.from(calendarDays).indexOf(selectedStartDate);
+    
+      // Find the index of the selected end date within calendarDays NodeList
+      const endIndex = Array.from(calendarDays).indexOf(selectedEndDate);
+    
       // Iterate through the days between start and end dates
-      const daysBetween = endDateIndex - startDateIndex;
-      for (let i = 0; i < daysBetween; i++) {
-        const indexToHighlight = startDateIndex + i;
-        const dayToHighlight = calendarDays[indexToHighlight];
+      for (let i = startIndex + 1; i < endIndex; i++) {
+        const dayToHighlight = calendarDays[i];
         const dayOfWeekToHighlight = new Date(
           currentYear,
           currentMonth,
           parseInt(dayToHighlight.textContent)
         ).getDay();
-
+    
         // Check if the day to highlight is not Saturday or Sunday
         if (dayOfWeekToHighlight !== 0 && dayOfWeekToHighlight !== 6) {
           dayToHighlight.classList.add('selected');
