@@ -9,10 +9,216 @@ let selectedEndDate = null;
 let selectedEndDateUtc = null;
 let selectedDate = null;
 
+// Variables to store the selected start/end times
+let selectedStartTime = null;
+let selectedEndTime = null;
+
 // Get the current date
 const currentDate = new Date();
 let currentYear = currentDate.getFullYear();
 let currentMonth = currentDate.getMonth();
+
+// flag for toggle if selecting start date
+let isSelectingStartDate = true;
+
+// Set the start and end times for dropdown start date/end date time menus in UTC format
+const times = [
+  "13:00:00Z",
+  "13:30:00Z",
+  "14:00:00Z",
+  "14:30:00Z",
+  "15:00:00Z",
+  "15:30:00Z",
+  "16:00:00Z",
+  "16:30:00Z",
+  "17:00:00Z",
+  "17:30:00Z",
+  "18:00:00Z",
+  "18:30:00Z",
+  "19:00:00Z",
+  "19:30:00Z",
+  "20:00:00Z",
+  "20:30:00Z",
+];
+
+// API CALLS
+// base URL
+const baseUrl = 'http://MackScheduler.eba-najyqvxe.us-east-2.elasticbeanstalk.com/api/';
+
+// Get references to the call buttons
+const getBlockedTimesButton = document.getElementById('get-blocked-times-button');
+const blockTimesButton = document.getElementById('block-times-button');
+const unblockTimesButton = document.getElementById('unblock-times-button');
+const getClientsButton = document.getElementById('get-clients-button');
+
+// Get references to the dropdown menus
+const startTimeDropdown = document.getElementById('start-time-dropdown');
+const endTimeDropdown = document.getElementById('end-time-dropdown');
+
+// Get references to the elements within the reschedule modal
+const calendarGridModal = document.querySelector('.calendar-grid-modal');
+const currentMonthModal = document.getElementById('current-month-modal');
+const prevMonthBtnModal = document.getElementById('prev-month-btn-modal');
+const nextMonthBtnModal = document.getElementById('next-month-btn-modal');
+const modalDropdown = document.getElementById('reschedule-time-dropdown');
+
+// Make dates clickable - do not allow empty squares to be clicked
+const calendarDays = document.querySelectorAll('.day:not(.empty');
+calendarDays.forEach(day => {
+  day.addEventListener('click', handleDayClick);
+});
+
+document.getElementById('current-month').textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentDate);
+
+// Button event listeners to navigate to previous month button
+document.getElementById('prev-month-btn').addEventListener('click', () => {
+  currentMonth--;
+  if (currentMonth < 0) {
+      currentYear--;
+      currentMonth = 11; 
+  }
+
+  generateCalendarDays(currentYear, currentMonth);
+  document.getElementById('current-month').textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date(currentYear, currentMonth, 1));
+
+  // Update the click event listeners for the days after changing the month
+  updateClickEventListeners();
+  populateDropdownWithTimes(currentYear, currentMonth);
+});
+
+// Button event listener to navigate to next month button
+document.getElementById('next-month-btn').addEventListener('click', () => {
+  currentMonth++;
+  if (currentMonth > 11) {
+      currentYear++;
+      currentMonth = 0; // January (0-based)
+  }
+  generateCalendarDays(currentYear, currentMonth);
+  document.getElementById('current-month').textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date(currentYear, currentMonth, 1));
+
+  // Update the click event listeners for the days after changing the month
+  updateClickEventListeners();
+  populateDropdownWithTimes(currentYear, currentMonth);
+});
+
+// Event listeners for dropdown menus
+startTimeDropdown.addEventListener('change', (e) => {
+  selectedStartTime = e.target.value;
+})
+
+endTimeDropdown.addEventListener('change', (e) => {
+  selectedEndTime = e.target.value;
+})
+
+// Event listener for get clients button
+getClientsButton.addEventListener('click', () => {
+  getClients();
+});
+
+// Event listener for get blocked times button
+getBlockedTimesButton.addEventListener('click', () => {
+  if (!selectedStartDateUtc && !selectedEndDateUtc) {
+    console.log('You must select a start and end date')
+    return;
+  }
+
+  if (selectedStartTime) {
+    updateSelectedStartTime();
+  }
+
+  if (selectedEndTime) {
+    updateSelectedEndTime();
+  }
+
+  fetchBlockedTimes(selectedStartDateUtc, selectedEndDateUtc);
+});
+
+// Event listener for block times button
+blockTimesButton.addEventListener('click', () => {
+  if (!selectedStartDateUtc && !selectedEndDateUtc) {
+    console.log('You must select a start and end date')
+    return;
+  }
+
+  if (selectedStartTime) {
+    updateSelectedStartTime();
+  }
+
+  if (selectedEndTime) {
+    updateSelectedEndTime();
+  }
+
+  const reqBody = {
+    reqStartDate: selectedStartDateUtc,
+    reqEndDate: selectedEndDateUtc
+  }
+
+  blockTimes(`${baseUrl}/admin/block-times`, reqBody)
+    .then(data => {
+      console.log('POST request successful', data);
+    })
+});
+
+// Event listener for unblock times button
+unblockTimesButton.addEventListener('click', () => {
+  if (!selectedStartDateUtc && !selectedEndDateUtc) {
+    console.log('You must select a start and end date')
+    return;
+  }
+
+  if (selectedStartTime) {
+    updateSelectedStartTime();
+  }
+
+  if (selectedEndTime) {
+    updateSelectedEndTime();
+  }
+
+  const reqBody = {
+    reqStartDate: selectedStartDateUtc,
+    reqEndDate: selectedEndDateUtc
+  }
+
+  unblockTimes(`${baseUrl}/admin/block-times`, reqBody)
+  .then(data => {
+    console.log('DELETE request successful', data);
+  })
+});
+
+// Event listener for previous month button in reschedule webinar modal
+prevMonthBtnModal.addEventListener('click', () => {
+  currentMonth--;
+  if (currentMonth < 0) {
+      currentYear--;
+      currentMonth = 11; 
+  }
+
+  generateCalendarDaysModal(currentYear, currentMonth);
+  currentMonthModal.textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date(currentYear, currentMonth, 1));
+})
+
+// Event listener for next month button in reschedule webinar modal
+nextMonthBtnModal.addEventListener('click', () => {
+  currentMonth++;
+  if (currentMonth > 11) {
+      currentYear++;
+      currentMonth = 0; 
+  }
+  generateCalendarDaysModal(currentYear, currentMonth);
+  currentMonthModal.textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date(currentYear, currentMonth, 1));
+});
+
+document.getElementById("reschedule-cancel").addEventListener("click", () => {
+  hideModal();
+})
+
+document.getElementById("reschedule-confirm").addEventListener("click", () => {
+  // Handle rescheduliing logic here
+  hideModal();
+})
+
+// Event listener for the modal reschedule times dropdown
+modalDropdown.addEventListener('change', handleTimeSelection);
 
 // Function to generate calendar days
 function generateCalendarDays(year, month) {
@@ -46,40 +252,6 @@ function generateCalendarDays(year, month) {
   }
 }
 
-// Display the current month initially
-generateCalendarDays(currentYear, currentMonth);
-document.getElementById('current-month').textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentDate);
-
-// Button event listeners to navigate to previous and next months
-document.getElementById('prev-month-btn').addEventListener('click', () => {
-  currentMonth--;
-  if (currentMonth < 0) {
-      currentYear--;
-      currentMonth = 11; 
-  }
-
-  generateCalendarDays(currentYear, currentMonth);
-  document.getElementById('current-month').textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date(currentYear, currentMonth, 1));
-
-  // Update the click event listeners for the days after changing the month
-  updateClickEventListeners();
-  populateDropdownWithTimes(currentYear, currentMonth);
-});
-
-document.getElementById('next-month-btn').addEventListener('click', () => {
-  currentMonth++;
-  if (currentMonth > 11) {
-      currentYear++;
-      currentMonth = 0; // January (0-based)
-  }
-  generateCalendarDays(currentYear, currentMonth);
-  document.getElementById('current-month').textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date(currentYear, currentMonth, 1));
-
-  // Update the click event listeners for the days after changing the month
-  updateClickEventListeners();
-  populateDropdownWithTimes(currentYear, currentMonth);
-});
-
 // Function to update click event listeners for the days after changing the month
 function updateClickEventListeners() {
   const calendarDays = document.querySelectorAll('.day:not(.empty)');
@@ -88,17 +260,6 @@ function updateClickEventListeners() {
       day.addEventListener('click', handleDayClick); // Add the updated click event listener
   });
 }
-
-// Make dates clickable - do not allow empty squares to be clicked
-const calendarDays = document.querySelectorAll('.day:not(.empty');
-calendarDays.forEach(day => {
-  day.addEventListener('click', handleDayClick);
-});
-
-// DROPDOWN MENUS
-// Get references to the dropdown menus
-const startTimeDropdown = document.getElementById('start-time-dropdown');
-const endTimeDropdown = document.getElementById('end-time-dropdown');
 
 // Function to populate dropdown menus with times
 function populateDropdownWithTimes(year, month) {
@@ -128,46 +289,6 @@ function populateDropdownWithTimes(year, month) {
     endTimeDropdown.appendChild(option.cloneNode(true));
   });
 }
-
-// Set the start and end times in UTC format
-const times = [
-  "13:00:00Z",
-  "13:30:00Z",
-  "14:00:00Z",
-  "14:30:00Z",
-  "15:00:00Z",
-  "15:30:00Z",
-  "16:00:00Z",
-  "16:30:00Z",
-  "17:00:00Z",
-  "17:30:00Z",
-  "18:00:00Z",
-  "18:30:00Z",
-  "19:00:00Z",
-  "19:30:00Z",
-  "20:00:00Z",
-  "20:30:00Z",
-];
-
-// Call the function to populate the dropdown menus with times from the current year and month
-populateDropdownWithTimes(currentYear, currentMonth);
-
-// Store the selected times
-let selectedStartTime = null;
-let selectedEndTime = null;
-
-// Event listeners for dropdown menus
-startTimeDropdown.addEventListener('change', (e) => {
-  selectedStartTime = e.target.value;
-})
-
-endTimeDropdown.addEventListener('change', (e) => {
-  selectedEndTime = e.target.value;
-})
-
-// SELECTING START AND END DATES
-// flag for toggle
-let isSelectingStartDate = true;
 
 // Function to handle click events on calendar days
 function handleDayClick(event) {
@@ -262,17 +383,6 @@ function clearSelection () {
   selectedEndDateUtc = null;
 }
 
-// API CALLS
-// base URL
-const baseUrl = 'http://MackScheduler.eba-najyqvxe.us-east-2.elasticbeanstalk.com/api/';
-
-// Get references to the buttons
-const getBlockedTimesButton = document.getElementById('get-blocked-times-button');
-const blockTimesButton = document.getElementById('block-times-button');
-const unblockTimesButton = document.getElementById('unblock-times-button');
-const getClientsButton = document.getElementById('get-clients-button');
-
-// Function to fetch appointments
 async function fetchAppointments() {
   const currentDate = new Date();
   const endDate = new Date();
@@ -298,7 +408,6 @@ async function fetchAppointments() {
     console.error('Error fetching appointments', error);
   }
 }
-
 
 function renderAppointments(appointments) {
   const appointmentsContainer = document.getElementById("appointments-container");
@@ -410,14 +519,6 @@ function hideModal() {
   modal.style.display = "none";
 }
 
-// Calendar elements within the modal
-const calendarGridModal = document.querySelector('.calendar-grid-modal');
-const currentMonthModal = document.getElementById('current-month-modal');
-const prevMonthBtnModal = document.getElementById('prev-month-btn-modal');
-const nextMonthBtnModal = document.getElementById('next-month-btn-modal');
-const modalDropdown = document.getElementById('reschedule-time-dropdown');
-modalDropdown.addEventListener('change', handleTimeSelection);
-
 function handleTimeSelection() {
   console.log('click');
 }
@@ -484,7 +585,6 @@ function handleModalDayClick(event) {
   fetchAvailableTimes(selectedDateUtcString);
 }
 
-// Function to fetch available times from API
 function fetchAvailableTimes(selectedDate) {
   const availableTimes = fetch(`${baseUrl}calendar/times/${selectedDate}`)
     .then(response => {
@@ -501,7 +601,6 @@ function fetchAvailableTimes(selectedDate) {
     })
 }
 
-// Function to populate the dropdown menu with available times
 function populateModalDropdown(times) {
   console.log('Function Called!')
   modalDropdown.innerHTML = ''; // Clear previous entries
@@ -537,37 +636,6 @@ function populateModalDropdown(times) {
   }
 }
 
-
-prevMonthBtnModal.addEventListener('click', () => {
-  currentMonth--;
-  if (currentMonth < 0) {
-      currentYear--;
-      currentMonth = 11; 
-  }
-
-  generateCalendarDaysModal(currentYear, currentMonth);
-  currentMonthModal.textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date(currentYear, currentMonth, 1));
-})
-
-nextMonthBtnModal.addEventListener('click', () => {
-  currentMonth++;
-  if (currentMonth > 11) {
-      currentYear++;
-      currentMonth = 0; // January (0-based)
-  }
-  generateCalendarDaysModal(currentYear, currentMonth);
-  currentMonthModal.textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date(currentYear, currentMonth, 1));
-});
-
-document.getElementById("reschedule-cancel").addEventListener("click", () => {
-  hideModal();
-})
-
-document.getElementById("reschedule-confirm").addEventListener("click", () => {
-  // Handle rescheduliing logic here
-  hideModal();
-})
-
 function showRescheduleDropdown(webinarId, appointmentElement) {
   const rescheduleWebinarContainer = document.getElementById("reschedule-webinar-container");
   const rescheduleTimeDropdown = document.getElementById("reschedule-time-dropdown");
@@ -583,25 +651,6 @@ function showRescheduleDropdown(webinarId, appointmentElement) {
   // Example: You can use the same logic as in populateDropdownWithTimes function
   // populateDropdownWithTimes(rescheduleTimeDropdown);
 }
-
-
-// GET BLOCKED TIMES
-getBlockedTimesButton.addEventListener('click', () => {
-  if (!selectedStartDateUtc && !selectedEndDateUtc) {
-    console.log('You must select a start and end date')
-    return;
-  }
-
-  if (selectedStartTime) {
-    updateSelectedStartTime();
-  }
-
-  if (selectedEndTime) {
-    updateSelectedEndTime();
-  }
-
-  fetchBlockedTimes(selectedStartDateUtc, selectedEndDateUtc);
-});
 
 async function fetchBlockedTimes(startDate, endDate) {
   try {
@@ -688,32 +737,6 @@ function renderBlockedTimes(blockedTimes) {
   }
 }
 
-// POST - BLOCK TIMES - If the client wants to block a full day - times are not needed
-blockTimesButton.addEventListener('click', () => {
-  if (!selectedStartDateUtc && !selectedEndDateUtc) {
-    console.log('You must select a start and end date')
-    return;
-  }
-
-  if (selectedStartTime) {
-    updateSelectedStartTime();
-  }
-
-  if (selectedEndTime) {
-    updateSelectedEndTime();
-  }
-
-  const reqBody = {
-    reqStartDate: selectedStartDateUtc,
-    reqEndDate: selectedEndDateUtc
-  }
-
-  blockTimes(`${baseUrl}/admin/block-times`, reqBody)
-    .then(data => {
-      console.log('POST request successful', data);
-    })
-});
-
 async function blockTimes(url, body) {
   try {
     const response = await fetch(url, {
@@ -734,33 +757,6 @@ async function blockTimes(url, body) {
     console.error('Error making POST request', error);
   }
 }
-
-
-// DELETE - UNBLOCK TIMES
-unblockTimesButton.addEventListener('click', () => {
-  if (!selectedStartDateUtc && !selectedEndDateUtc) {
-    console.log('You must select a start and end date')
-    return;
-  }
-
-  if (selectedStartTime) {
-    updateSelectedStartTime();
-  }
-
-  if (selectedEndTime) {
-    updateSelectedEndTime();
-  }
-
-  const reqBody = {
-    reqStartDate: selectedStartDateUtc,
-    reqEndDate: selectedEndDateUtc
-  }
-
-  unblockTimes(`${baseUrl}/admin/block-times`, reqBody)
-  .then(data => {
-    console.log('DELETE request successful', data);
-  })
-});
 
 async function unblockTimes(url, body) {
   try {
@@ -783,11 +779,6 @@ async function unblockTimes(url, body) {
   }
 }
 
-// GET - ALL CLIENTS
-getClientsButton.addEventListener('click', () => {
-  getClients();
-})
-
 async function getClients() {
   try {
     const response = await fetch(`${baseUrl}admin/clients`);
@@ -804,8 +795,6 @@ async function getClients() {
   }
 }
 
-
-// function to update selectedStartTime
 function updateSelectedStartTime() {
   // Create new Date objects using the selected date and time
   const selectedStartDateTime = new Date(selectedStartDateUtc);
@@ -826,5 +815,11 @@ function updateSelectedEndTime() {
   selectedEndDateUtc = selectedEndDateTime.toISOString();
 }
 
+// Display the current month initially
+generateCalendarDays(currentYear, currentMonth);
+
 // GET upcoming appointments on page load.
 fetchAppointments();
+
+// Populate start date/end date dropdowns with times
+populateDropdownWithTimes(currentYear, currentMonth);
