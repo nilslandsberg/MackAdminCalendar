@@ -9,6 +9,11 @@
 </head>
 <body>
     <h1>Mack Scheduler Test Admin Calendar</h1>
+    <br>
+    <h2>Upcoming Appointments</h2>
+    <div id="appointments-container">
+      <!-- Upcoming Appointments Render Here -->
+    </div>
     <div id="calendar">
         <!-- Calendar header -->
         <div class="calendar-header">
@@ -45,10 +50,6 @@
       </select>
     </div>
     <br>
-    <div id="get-appointments-button">
-      <button>Get Appointments</button>
-    </div>
-
     <div id="reschedule-webinar-container" style="display: none">
       <p>Select a date:</p>
       <select id="reschedule-time-dropdown">
@@ -56,9 +57,7 @@
       </select>
     </div>
 
-    <div id="appointments-container">
 
-    </div>
     <br>
     <div id="get-blocked-times-button">
       <button>Get Blocked Times</button>

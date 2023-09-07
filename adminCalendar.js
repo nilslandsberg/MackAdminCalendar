@@ -267,33 +267,21 @@ function clearSelection () {
 const baseUrl = 'http://MackScheduler.eba-najyqvxe.us-east-2.elasticbeanstalk.com/api/';
 
 // Get references to the buttons
-const getAppointmentsButton = document.getElementById('get-appointments-button');
 const getBlockedTimesButton = document.getElementById('get-blocked-times-button');
 const blockTimesButton = document.getElementById('block-times-button');
 const unblockTimesButton = document.getElementById('unblock-times-button');
 const getClientsButton = document.getElementById('get-clients-button');
 
-// GET APPOINTMENTS
-getAppointmentsButton.addEventListener('click', () => {
-  if (!selectedStartDateUtc && !selectedEndDateUtc) {
-    console.log('You must select a start and end date')
-    return;
-  }
-
-  if (selectedStartTime) {
-    updateSelectedStartTime();
-  }
-
-  if (selectedEndTime) {
-    updateSelectedEndTime();
-  }
-  fetchAppointments(selectedStartDateUtc, selectedEndDateUtc);
-});
-
 // Function to fetch appointments
-async function fetchAppointments(startDate, endDate) {
+async function fetchAppointments() {
+  const currentDate = new Date();
+  const endDate = new Date();
+  endDate.setDate(currentDate.getDate() + 30);
+
+  const startDateISO = currentDate.toISOString();
+  const endDateISO = endDate.toISOString();
   try {
-    const response = await fetch(`${baseUrl}admin/appointment/${startDate}/${endDate}`);
+    const response = await fetch(`${baseUrl}admin/appointment/${startDateISO}/${endDateISO}`);
 
     if (!response.ok) {
       throw new Error('Network response was not ok');
@@ -302,7 +290,7 @@ async function fetchAppointments(startDate, endDate) {
     const data = await response.json();
     const bookedAppointments = data.bookedAppointments;
     if (bookedAppointments.length === 0) {
-      console.log('No appointments found during the requested date/time range');
+      console.log('There are no upcoming appointments');
     } else {
       renderAppointments(bookedAppointments);
     }
@@ -310,12 +298,19 @@ async function fetchAppointments(startDate, endDate) {
     console.error('Error fetching appointments', error);
   }
 }
+fetchAppointments();
 
 function renderAppointments(appointments) {
   const appointmentsContainer = document.getElementById("appointments-container");
   appointmentsContainer.innerHTML = ""; // Clear previous content
 
+  const appointmentCardsContainer = document.createElement("div");
+  appointmentCardsContainer.className = "appointment-cards-container";
+
   appointments.forEach(appointment => {
+    const appointmentCardContainer = document.createElement("div");
+    appointmentCardContainer.className = "appointment-card-container"
+
     const appointmentElement = document.createElement("div");
     appointmentElement.className = "appointment";
 
@@ -352,9 +347,9 @@ function renderAppointments(appointments) {
       <button class="cancel-webinar" data-webinar-id="${webinarId}">Cancel Webinar</button>
     `;
     
-    
     appointmentElement.innerHTML = appointmentContent;
-    appointmentsContainer.appendChild(appointmentElement);
+    appointmentCardContainer.appendChild(appointmentElement);
+    appointmentCardsContainer.appendChild(appointmentCardContainer);
 
     const startWebinarButton = appointmentElement.querySelector(".start-webinar");
     const rescheduleWebinarButton = appointmentElement.querySelector(".reschedule-webinar");
@@ -376,6 +371,7 @@ function renderAppointments(appointments) {
       deleteAppointment(appointment._id, webinarId, appointmentElement)
     })
   });
+  appointmentsContainer.appendChild(appointmentCardsContainer);
 }
 
 async function deleteAppointment(appointmentId, webinarId, appointmentElement) {
