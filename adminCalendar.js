@@ -49,7 +49,7 @@ const times = [
 
 // API CALLS
 // base URL
-const baseUrl = 'https://MackScheduler.eba-najyqvxe.us-east-2.elasticbeanstalk.com/api/';
+const baseUrl = 'http://MackScheduler.eba-najyqvxe.us-east-2.elasticbeanstalk.com/api/';
 
 // Get references to the call buttons
 const getBlockedTimesButton = document.getElementById('get-blocked-times-button');
