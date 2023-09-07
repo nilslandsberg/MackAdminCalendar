@@ -494,7 +494,7 @@ function fetchAvailableTimes(selectedDate) {
       return response.json();
     })
     .then(data => {
-      populateDropdown(data.availableTimes); 
+      populateModalDropdown(data.availableTimes);
     })
     .catch(error => {
       console.error('Error fetching available times: ', error);
@@ -502,8 +502,8 @@ function fetchAvailableTimes(selectedDate) {
 }
 
 // Function to populate the dropdown menu with available times
-function populateDropdown(times) {
-  
+function populateModalDropdown(times) {
+  console.log('Function Called!')
   modalDropdown.innerHTML = ''; // Clear previous entries
 
   if (times.length === 0) {
@@ -528,14 +528,15 @@ function populateDropdown(times) {
       const utcDate = new Date(time);
       // Set the time string to the user's local time zone
       const userTimeZoneTime = utcDate.toLocaleString('en-US', userTimeZoneOptions);
-      console.log(userTimeZoneTime)
       const option = document.createElement('option');
       option.textContent = userTimeZoneTime;
+      console.log(option);
       option.setAttribute('data-utc', time); // Stores the UTC string for access when selecting
       modalDropdown.appendChild(option);
     });
   }
 }
+
 
 prevMonthBtnModal.addEventListener('click', () => {
   currentMonth--;
