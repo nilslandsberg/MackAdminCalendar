@@ -13,6 +13,12 @@ let selectedDate = null;
 let selectedStartTime = null;
 let selectedEndTime = null;
 
+// Reschedule Modal Variables
+let rescheduleAppointmentId = null;
+let selectedRescheduleDate = null;
+let selectedRescheduleTime = null;
+let selectedRescheduleDateUtcString = null;
+
 // Get the current date
 const currentDate = new Date();
 let currentYear = currentDate.getFullYear();
@@ -208,16 +214,17 @@ nextMonthBtnModal.addEventListener('click', () => {
 });
 
 document.getElementById("reschedule-cancel").addEventListener("click", () => {
+  rescheduleAppointmentId = null;
   hideModal();
 })
 
 document.getElementById("reschedule-confirm").addEventListener("click", () => {
-  // Handle rescheduliing logic here
+  rescheduleWebinar()
   hideModal();
 })
 
 // Event listener for the modal reschedule times dropdown
-modalDropdown.addEventListener('change', handleTimeSelection);
+modalDropdown.addEventListener('change', handleModalTimeSelection);
 
 // Function to generate calendar days
 function generateCalendarDays(year, month) {
@@ -468,6 +475,7 @@ function renderAppointments(appointments) {
     });
 
     rescheduleWebinarButton.addEventListener("click", () => {
+      rescheduleAppointmentId = appointment._id;
       openCalendarModal();
     });
 
@@ -526,8 +534,11 @@ function hideModal() {
   modal.style.display = "none";
 }
 
-function handleTimeSelection() {
-  console.log('click');
+function handleModalTimeSelection(event) {
+  const selectedTime = event.target.value;
+  const selectedUtc = event.target.options[event.target.selectedIndex].getAttribute('data-utc');
+  selectedRescheduleDateUtcString = selectedUtc
+  console.log(selectedRescheduleDateUtcString)
 }
 
 function generateCalendarDaysModal(year, month) {
@@ -578,18 +589,44 @@ function handleModalDayClick(event) {
     return;
   }
 
-  if (selectedDate !== null) {
-    selectedDate.classList.remove('selected');
+  if (selectedRescheduleDate !== null) {
+    selectedRescheduleDate.classList.remove('selected');
   }
 
-  selectedDate = clickedDay;
-  selectedDate.classList.add('selected');
-
+  selectedRescheduleDate = clickedDay;
+  selectedRescheduleDate.classList.add('selected');
+  
   const selectedDateUtc = new Date(Date.UTC(selectedYear, selectedMonth, selectedDay));
 
   const selectedDateUtcString = selectedDateUtc.toISOString();
 
   fetchAvailableTimes(selectedDateUtcString);
+}
+
+async function rescheduleWebinar() {
+  try {
+    const reqBody = {
+      newDate: selectedRescheduleDateUtcString
+    };
+    
+    console.log(reqBody);
+    console.log("appointmentId: ",rescheduleAppointmentId);
+    const response = await axios.patch(`${baseUrl}admin/appointment/${rescheduleAppointmentId}`, reqBody);
+    console.log('Request: ', response.request)
+    if (response.status === 200) {
+      // The update was successful, so you can fetch appointments and hide the modal.
+      fetchAppointments();
+      hideModal();
+    } else {
+      // Handle unexpected status codes with appropriate error messages.
+      console.error('Error rescheduling appointment. Status:', response.status);
+      // You might also want to display an error message to the user.
+    }
+  } catch (error) {
+    // Handle any network errors or exceptions.
+    console.error('Error rescheduling appointment:', error);
+    // You can display a user-friendly error message here as well.
+  }
 }
 
 function fetchAvailableTimes(selectedDate) {
@@ -609,8 +646,6 @@ function fetchAvailableTimes(selectedDate) {
 }
 
 function populateModalDropdown(times) {
-  console.log('Function Called!')
-  console.log(times)
   modalDropdown.innerHTML = ''; // Clear previous entries
 
   if (times.length === 0) {
@@ -619,6 +654,10 @@ function populateModalDropdown(times) {
     defaultOption.textContent = 'No Times Available. Select Another Date';
     modalDropdown.appendChild(defaultOption);
   } else {
+
+    const defaultOption = document.createElement('option');
+    defaultOption.textContent = 'Select A Time';
+    modalDropdown.appendChild(defaultOption);
     // Populate the dropdown with available times
     // Get the user's time zone
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -637,7 +676,6 @@ function populateModalDropdown(times) {
       const userTimeZoneTime = utcDate.toLocaleString('en-US', userTimeZoneOptions);
       const option = document.createElement('option');
       option.textContent = userTimeZoneTime;
-      console.log(option);
       option.setAttribute('data-utc', time); // Stores the UTC string for access when selecting
       modalDropdown.appendChild(option);
     });
