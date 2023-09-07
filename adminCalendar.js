@@ -612,11 +612,9 @@ async function fetchBlockedTimes(startDate, endDate) {
 
     const data = await response.json();
     const blockedTimes = data.blockedTimes;
-    if (blockedTimes.length === 0) {
-      console.log('No blocked times found during the requested date/time range');
-    } else {
-      renderBlockedTimes(blockedTimes);
-    }
+
+    renderBlockedTimes(blockedTimes);
+
   } catch (error) {
     console.error('Error fetching appointments', error);
   }
@@ -627,60 +625,67 @@ function renderBlockedTimes(blockedTimes) {
 
   blockedTimesContainer.innerHTML = "";
 
-  const blockedTimesByDate = {};
+  if (blockedTimes.length === 0) {
+    // If no blocked times are found, display the message
+    const noBlockedTimesMessage = document.createElement("div");
+    noBlockedTimesMessage.style.fontWeight = "bold";
+    noBlockedTimesMessage.textContent = "No blocked times found during the requested date/time range";
+    noBlockedTimesMessage.className = "no-blocked-times-message";
+    blockedTimesContainer.appendChild(noBlockedTimesMessage);
+  } else {
+    const blockedTimesByDate = {};
 
-  blockedTimes.forEach(utcTimeString => {
-    const utcDate = new Date(utcTimeString);
-    // Get date in YYY-MM-DD format
-    const dateKey = utcDate.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
+    blockedTimes.forEach(utcTimeString => {
+      const utcDate = new Date(utcTimeString);
+      // Get date in YYY-MM-DD format
+      const dateKey = utcDate.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      })
 
-    if (!blockedTimesByDate[dateKey]) {
-      blockedTimesByDate[dateKey] = [];
-    }
+      if (!blockedTimesByDate[dateKey]) {
+        blockedTimesByDate[dateKey] = [];
+      }
 
-    const timeString = utcDate.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
+      const timeString = utcDate.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
+
+      blockedTimesByDate[dateKey].push(timeString);
     });
-
-    blockedTimesByDate[dateKey].push(timeString);
-  });
-  
-   // Sort date keys in chronological order
-   const sortedDateKeys = Object.keys(blockedTimesByDate).sort((a, b) => {
-    const dateA = new Date(a);
-    const dateB = new Date(b);
-    return dateA - dateB;
-  });
-  
-  // Iterate through the sorted date keys and create HTML elements
-  sortedDateKeys.forEach(dateKey => {
-    const dateElement = document.createElement("div");
-    dateElement.className = "blocked-date";
-    dateElement.textContent = dateKey;
-
-    const timesElement = document.createElement("ul");
-    timesElement.className = "blocked-times";
-
-    blockedTimesByDate[dateKey].forEach(blockedTime => {
-      const timeItem = document.createElement("li");
-      timeItem.textContent = blockedTime;
-      timesElement.appendChild(timeItem);
+    
+    // Sort date keys in chronological order
+    const sortedDateKeys = Object.keys(blockedTimesByDate).sort((a, b) => {
+      const dateA = new Date(a);
+      const dateB = new Date(b);
+      return dateA - dateB;
     });
+    
+    // Iterate through the sorted date keys and create HTML elements
+    sortedDateKeys.forEach(dateKey => {
+      const dateElement = document.createElement("div");
+      dateElement.className = "blocked-date";
+      dateElement.style.fontWeight = "bold";
+      dateElement.textContent = dateKey;
 
-     // Append the date and times to the container
-     blockedTimesContainer.appendChild(dateElement);
-     blockedTimesContainer.appendChild(timesElement);
-  })
+      const timesElement = document.createElement("ul");
+      timesElement.className = "blocked-times";
+
+      blockedTimesByDate[dateKey].forEach(blockedTime => {
+        const timeItem = document.createElement("li");
+        timeItem.textContent = blockedTime;
+        timesElement.appendChild(timeItem);
+      });
+
+      // Append the date and times to the container
+      blockedTimesContainer.appendChild(dateElement);
+      blockedTimesContainer.appendChild(timesElement);
+    });
+  }
 }
-
-
-
 
 // POST - BLOCK TIMES - If the client wants to block a full day - times are not needed
 blockTimesButton.addEventListener('click', () => {
