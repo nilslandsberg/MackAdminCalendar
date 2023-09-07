@@ -298,7 +298,7 @@ async function fetchAppointments() {
     console.error('Error fetching appointments', error);
   }
 }
-fetchAppointments();
+
 
 function renderAppointments(appointments) {
   const appointmentsContainer = document.getElementById("appointments-container");
@@ -615,12 +615,71 @@ async function fetchBlockedTimes(startDate, endDate) {
     if (blockedTimes.length === 0) {
       console.log('No blocked times found during the requested date/time range');
     } else {
-      console.log(blockedTimes);
+      renderBlockedTimes(blockedTimes);
     }
   } catch (error) {
     console.error('Error fetching appointments', error);
   }
 }
+
+function renderBlockedTimes(blockedTimes) {
+  const blockedTimesContainer = document.getElementById("blocked-times-container");
+
+  blockedTimesContainer.innerHTML = "";
+
+  const blockedTimesByDate = {};
+
+  blockedTimes.forEach(utcTimeString => {
+    const utcDate = new Date(utcTimeString);
+    // Get date in YYY-MM-DD format
+    const dateKey = utcDate.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
+
+    if (!blockedTimesByDate[dateKey]) {
+      blockedTimesByDate[dateKey] = [];
+    }
+
+    const timeString = utcDate.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+
+    blockedTimesByDate[dateKey].push(timeString);
+  });
+  
+   // Sort date keys in chronological order
+   const sortedDateKeys = Object.keys(blockedTimesByDate).sort((a, b) => {
+    const dateA = new Date(a);
+    const dateB = new Date(b);
+    return dateA - dateB;
+  });
+  
+  // Iterate through the sorted date keys and create HTML elements
+  sortedDateKeys.forEach(dateKey => {
+    const dateElement = document.createElement("div");
+    dateElement.className = "blocked-date";
+    dateElement.textContent = dateKey;
+
+    const timesElement = document.createElement("ul");
+    timesElement.className = "blocked-times";
+
+    blockedTimesByDate[dateKey].forEach(blockedTime => {
+      const timeItem = document.createElement("li");
+      timeItem.textContent = blockedTime;
+      timesElement.appendChild(timeItem);
+    });
+
+     // Append the date and times to the container
+     blockedTimesContainer.appendChild(dateElement);
+     blockedTimesContainer.appendChild(timesElement);
+  })
+}
+
+
 
 
 // POST - BLOCK TIMES - If the client wants to block a full day - times are not needed
@@ -760,3 +819,6 @@ function updateSelectedEndTime() {
   // Update the selected date and time
   selectedEndDateUtc = selectedEndDateTime.toISOString();
 }
+
+// GET upcoming appointments on page load.
+fetchAppointments();
