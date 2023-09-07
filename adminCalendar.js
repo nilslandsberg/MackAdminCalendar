@@ -407,6 +407,12 @@ async function fetchAppointments() {
     if (bookedAppointments.length === 0) {
       console.log('There are no upcoming appointments');
     } else {
+      bookedAppointments.sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateA - dateB;
+      });
+
       renderAppointments(bookedAppointments);
     }
   } catch (error) {
