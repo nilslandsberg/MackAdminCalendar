@@ -468,13 +468,10 @@ function renderAppointments(appointments) {
     });
 
     rescheduleWebinarButton.addEventListener("click", () => {
-      console.log("show webinar", webinarId)
       openCalendarModal();
     });
 
     cancelWebinarButton.addEventListener("click", () => {
-      console.log("Cancel Webinar #", webinarId);
-      console.log(appointment._id);
       deleteAppointment(appointment._id, webinarId, appointmentElement)
     })
   });
@@ -486,8 +483,20 @@ async function deleteAppointment(appointmentId, webinarId, appointmentElement) {
     const response = await axios.delete(`${baseUrl}admin/appointment/${appointmentId}/${webinarId}`);
 
     if (response.status === 200) {
-    // Remove the appointment element from the DOM
-    appointmentElement.parentNode.removeChild(appointmentElement)
+      // Remove the appointment element from the DOM
+      appointmentElement.parentNode.removeChild(appointmentElement);
+
+      // Check if there are any remaining appointments in other containers
+      const allContainers = document.querySelectorAll('.appointment-card-container');
+      
+      allContainers.forEach(container => {
+        const remainingAppointments = container.querySelectorAll('.appointment');
+        
+        if (remainingAppointments.length === 0) {
+          // If no remaining appointments in this container, remove it
+          container.parentNode.removeChild(container);
+        }
+      });
     } else {
       console.error('Error deleting appointment: ', response.status);
     }
