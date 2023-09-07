@@ -601,6 +601,7 @@ function fetchAvailableTimes(selectedDate) {
 
 function populateModalDropdown(times) {
   console.log('Function Called!')
+  console.log(times)
   modalDropdown.innerHTML = ''; // Clear previous entries
 
   if (times.length === 0) {
