@@ -1,6 +1,10 @@
 body {
   font-family: Arial, sans-serif;
 }
+
+h1 {
+  text-align: center;
+}
 #calendar {
   max-width: 400px;
   margin: 0 auto;
@@ -82,6 +86,71 @@ body {
   padding: 10px; 
 }
 
-ul {
+.blocked-times-container {
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 20px; 
+}
+
+.date-and-times {
+  display: flex;
+  align-items: center;
+  text-align: center; 
+}
+
+.blocked-date {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.blocked-times {
   list-style-type: none;
+  padding: 0; 
+  margin: 0;
+}
+
+.blocked-times li {
+  margin-right: 5px; 
+}
+
+#selected-start-date,
+#selected-end-date {
+  text-align: center; 
+  margin: 5px 0; 
+}
+
+.date-dropdown-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: row; 
+  align-items: center;
+  margin-top: 20px; 
+}
+
+.date-dropdown {
+  margin: 0 10px; 
+}
+
+.start-time-dropdown-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+select {
+  width: 150px; 
+}
+
+
+.blocked-times-button-container {
+  display: flex; 
+  justify-content: center;
+}
+
+.blocked-times-button-container button {
+  margin: 0 10px; 
+}
+
+.sub-heading {
+  text-align: center;
 }

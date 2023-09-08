@@ -10,7 +10,7 @@
 <body>
     <h1>Mack Scheduler Test Admin Calendar</h1>
     <br>
-    <h2>Appointments in the Next 30 Days</h2>
+    <h2 class="sub-heading">Appointments in the Next 30 Days</h2>
     <div id="appointments-container">
       <!-- Upcoming Appointments Render Here -->
     </div>
@@ -34,37 +34,47 @@
             <!-- Calendar days will be populated by the JavaScript -->
         </div>
     </div>
-
+    <br>
+    <h2 class="sub-heading">Blocked Times</h2>
     <!-- Dropdown menu for selecting available times-->
-    <div id="selected-start-date">Select Start Date</div>
-    <div id="start-time-dropdown-container">
-      <select id="start-time-dropdown">
-        <option value="">Select Start Time</option>
-      </select>
-    </div>
+    <div class="date-dropdown-container">
+      <div class="date-dropdown">
+          <div id="selected-start-date">Select Start Date</div>
+          <div id="start-time-dropdown-container">
+              <select id="start-time-dropdown">
+                  <option value="">Select Start Time</option>
+              </select>
+          </div>
+      </div>
+      <div class="date-dropdown">
+          <div id="selected-end-date">Select End Date</div>
+          <div id="end-time-dropdown-container">
+              <select id="end-time-dropdown">
+                  <option value="">Select End Time</option>
+              </select>
+          </div>
+      </div>
+  </div>
     <br>
-    <div id="selected-end-date">Select End Date</div>
-    <div id="end-time-dropdown-container">
-      <select id="end-time-dropdown">
-        <option value="">Select End Time</option>
-      </select>
-    </div>
     <br>
-
-
-    <br>
-    <div id="blocked-times-container"></div>
-    <div id="get-blocked-times-button">
-      <button>Get Blocked Times</button>
+   
+    <div id="blocked-times-container">
+      <!-- Blocked Times Lists Will Appear Here-->
     </div>
-    <br>
-    <div id="block-times-button">
-      <button>Block Times</button>
+    <div class="blocked-times-button-container">
+      <div id="get-blocked-times-button">
+        <button>Get Blocked Times</button>
+      </div>
+      <br>
+      <div id="block-times-button">
+        <button>Block Times</button>
+      </div>
+      <br>
+      <div id="unblock-times-button">
+        <button>Unblock Times</button>
+      </div>
     </div>
-    <br>
-    <div id="unblock-times-button">
-      <button>Unblock Times</button>
-    </div>
+    
     <br>
     <div id="get-clients-button">
       <button>Get Clients</button>

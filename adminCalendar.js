@@ -755,14 +755,14 @@ function renderBlockedTimes(blockedTimes) {
 
       blockedTimesByDate[dateKey].push(timeString);
     });
-    
+
     // Sort date keys in chronological order
     const sortedDateKeys = Object.keys(blockedTimesByDate).sort((a, b) => {
       const dateA = new Date(a);
       const dateB = new Date(b);
       return dateA - dateB;
     });
-    
+
     // Iterate through the sorted date keys and create HTML elements
     sortedDateKeys.forEach(dateKey => {
       const dateElement = document.createElement("div");
@@ -779,12 +779,18 @@ function renderBlockedTimes(blockedTimes) {
         timesElement.appendChild(timeItem);
       });
 
+      // Create a single date-and-time div for each date
+      const dateAndTimeDiv = document.createElement('div');
+      dateAndTimeDiv.className = "date-and-time";
+
       // Append the date and times to the container
-      blockedTimesContainer.appendChild(dateElement);
-      blockedTimesContainer.appendChild(timesElement);
+      dateAndTimeDiv.appendChild(dateElement);
+      dateAndTimeDiv.appendChild(timesElement);
+      blockedTimesContainer.appendChild(dateAndTimeDiv);
     });
   }
 }
+
 
 async function blockTimes(url, body) {
   try {
@@ -801,6 +807,9 @@ async function blockTimes(url, body) {
     }
 
     const data = await response.json();
+    if (data) {
+      fetchBlockedTimes(selectedStartDateUtc, selectedEndDateUtc)
+    }
     return data;
   } catch (error) {
     console.error('Error making POST request', error);
