@@ -61,7 +61,7 @@ const nextMonthBtnModal = document.getElementById('next-month-btn-modal');
 const modalDropdown = document.getElementById('reschedule-time-dropdown');
 
 const calendarDays = document.querySelectorAll('.day');
-console.log(calendarDays);
+
 calendarGrid.addEventListener('click', function (event) {
   const clickedDay = event.target;
   if (clickedDay.classList.contains('day')) {
