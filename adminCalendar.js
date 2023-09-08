@@ -30,21 +30,13 @@ let isSelectingStartDate = true;
 // Set the start and end times for dropdown start date/end date time menus in UTC format
 const times = [
   "13:00:00Z",
-  "13:30:00Z",
   "14:00:00Z",
-  "14:30:00Z",
   "15:00:00Z",
-  "15:30:00Z",
   "16:00:00Z",
-  "16:30:00Z",
   "17:00:00Z",
-  "17:30:00Z",
   "18:00:00Z",
-  "18:30:00Z",
   "19:00:00Z",
-  "19:30:00Z",
   "20:00:00Z",
-  "20:30:00Z",
 ];
 
 // API CALLS
@@ -554,10 +546,13 @@ function generateCalendarDaysModal(year, month) {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
   // Get the first day of the month (0-6 for Sunday-Saturday)
-  const firstDay = new Date(year, month, 1).getDay();
+  const firstDay = new Date(year, month, 1).getUTCDay();
+
+  // Define an array for day labels
+  const dayLabels = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
   // Calculate the number of empty cells needed at the beginning of the calendar
-  const emptyCells = (firstDay + 6) % 7;
+  const emptyCells = (firstDay + 7) % 7;
 
   // Add empty cells for previous month days
   for (let i = 0; i < emptyCells; i++) {
@@ -582,6 +577,7 @@ function generateCalendarDaysModal(year, month) {
   }
 }
 
+
 function handleModalDayClick(event) {
   const clickedDay = event.target;
   const dayNumber = clickedDay.textContent;
@@ -591,7 +587,7 @@ function handleModalDayClick(event) {
   const dayOfWeek = new Date(selectedYear, selectedMonth, selectedDay).getDay(0)
 
   // Check if day is a Saturday or Sunday
-  if ( dayOfWeek === 0 || dayOfWeek === 1) {
+  if ( dayOfWeek === 0 || dayOfWeek === 6) {
     return;
   }
 
