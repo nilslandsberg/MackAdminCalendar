@@ -126,7 +126,7 @@ blockTimesButton.addEventListener('click', () => {
     reqEndDate: selectedEndDateUtc
   }
 
-  blockTimes(`${baseUrl}/admin/block-times`, reqBody)
+  blockTimes(`${baseUrl}admin/block-times`, reqBody)
     .then(data => {
       console.log('POST request successful', data);
       fetchBlockedTimes();
@@ -142,7 +142,8 @@ unblockTimesButton.addEventListener('click', () => {
     console.log('You must select a start and end date')
     return;
   }
-
+  console.log(selectedStartTime);
+  console.log(selectedEndTime);
   if (selectedStartTime) {
     updateSelectedStartTime();
   }
@@ -156,7 +157,7 @@ unblockTimesButton.addEventListener('click', () => {
     reqEndDate: selectedEndDateUtc
   }
 
-  unblockTimes(`${baseUrl}/admin/block-times`, reqBody)
+  unblockTimes(`${baseUrl}admin/block-times`, reqBody)
   .then(data => {
     console.log('DELETE request successful', data);
     fetchBlockedTimes();
@@ -308,6 +309,8 @@ function handleDayClick(event) {
 
     // Create a local date object for the selected end date
     const selectedEndDateInfo = new Date(selectedYear, selectedMonth, selectedDay);
+    // Create UTC date object string for api calls
+    selectedEndDateUtc = new Date(Date.UTC(selectedYear, selectedMonth, selectedDay)).toISOString();
 
     if (selectedEndDateInfo <= new Date(selectedStartDateUtc)) {
       console.log('End date must be later than the start date');
@@ -774,9 +777,6 @@ async function blockTimes(url, body) {
     }
 
     const data = await response.json();
-    if (data) {
-      fetchBlockedTimes(selectedStartDateUtc, selectedEndDateUtc)
-    }
     return data;
   } catch (error) {
     console.error('Error making POST request', error);
@@ -784,23 +784,19 @@ async function blockTimes(url, body) {
 }
 
 async function unblockTimes(url, body) {
+
   try {
-    const response = await fetch(url, {
-      method: 'DELETE',
+    const response = await axios.delete(url, {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(body),
+      data: body 
     });
 
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-
-    const data = await response.json();
-    return data;
+    return response.data;
   } catch (error) {
-    console.error('Error making POST request', error);
+    console.error('Error making DELETE request', error);
+    throw error;
   }
 }
 
