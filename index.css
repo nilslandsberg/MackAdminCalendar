@@ -92,10 +92,18 @@ h1 {
   padding: 10px; 
 }
 
-.blocked-times-container {
+#blocked-times-container {
   display: flex; 
-  flex-wrap: wrap; 
-  gap: 20px; 
+  flex-wrap: nowrap; 
+  overflow-x: scroll;
+  white-space: nowrap; 
+}
+
+.blocked-date-container {
+  flex: 0 0 auto;        
+  margin-right: 10px;     
+  border: 1px solid #ccc; 
+  padding: 10px;       
 }
 
 .date-and-times {

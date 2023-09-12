@@ -697,7 +697,7 @@ function renderBlockedTimes(blockedTimes) {
     // If no blocked times are found, display the message
     const noBlockedTimesMessage = document.createElement("div");
     noBlockedTimesMessage.style.fontWeight = "bold";
-    noBlockedTimesMessage.textContent = "No blocked times found during the requested date/time range";
+    noBlockedTimesMessage.textContent = "There are currently no blocked times";
     noBlockedTimesMessage.className = "no-blocked-times-message";
     blockedTimesContainer.appendChild(noBlockedTimesMessage);
   } else {
@@ -734,6 +734,9 @@ function renderBlockedTimes(blockedTimes) {
 
     // Iterate through the sorted date keys and create HTML elements
     sortedDateKeys.forEach(dateKey => {
+      const dateContainer = document.createElement("div");
+      dateContainer.className = "blocked-date-container";
+
       const dateElement = document.createElement("div");
       dateElement.className = "blocked-date";
       dateElement.style.fontWeight = "bold";
@@ -748,14 +751,9 @@ function renderBlockedTimes(blockedTimes) {
         timesElement.appendChild(timeItem);
       });
 
-      // Create a single date-and-time div for each date
-      const dateAndTimeDiv = document.createElement('div');
-      dateAndTimeDiv.className = "date-and-time";
-
-      // Append the date and times to the container
-      dateAndTimeDiv.appendChild(dateElement);
-      dateAndTimeDiv.appendChild(timesElement);
-      blockedTimesContainer.appendChild(dateAndTimeDiv);
+      dateContainer.appendChild(dateElement);
+      dateContainer.appendChild(timesElement);
+      blockedTimesContainer.appendChild(dateContainer);
     });
   }
 }
