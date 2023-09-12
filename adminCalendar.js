@@ -45,7 +45,6 @@ const times = [
 const baseUrl = 'https://mack.spoken-app.com/api/';
 
 // Get references to the call buttons
-const getBlockedTimesButton = document.getElementById('get-blocked-times-button');
 const blockTimesButton = document.getElementById('block-times-button');
 const unblockTimesButton = document.getElementById('unblock-times-button');
 const getClientsButton = document.getElementById('get-clients-button');
@@ -113,24 +112,6 @@ getClientsButton.addEventListener('click', () => {
   getClients();
 });
 
-// Event listener for get blocked times button
-getBlockedTimesButton.addEventListener('click', () => {
-  if (!selectedStartDateUtc && !selectedEndDateUtc) {
-    console.log('You must select a start and end date')
-    return;
-  }
-
-  if (selectedStartTime) {
-    updateSelectedStartTime();
-  }
-
-  if (selectedEndTime) {
-    updateSelectedEndTime();
-  }
-
-  fetchBlockedTimes(selectedStartDateUtc, selectedEndDateUtc);
-});
-
 // Event listener for block times button
 blockTimesButton.addEventListener('click', () => {
   if (!selectedStartDateUtc && !selectedEndDateUtc) {
@@ -154,6 +135,10 @@ blockTimesButton.addEventListener('click', () => {
   blockTimes(`${baseUrl}/admin/block-times`, reqBody)
     .then(data => {
       console.log('POST request successful', data);
+      fetchBlockedTimes();
+    })
+    .catch(error => {
+      console.error('Error during POST request', error);
     })
 });
 
@@ -180,6 +165,10 @@ unblockTimesButton.addEventListener('click', () => {
   unblockTimes(`${baseUrl}/admin/block-times`, reqBody)
   .then(data => {
     console.log('DELETE request successful', data);
+    fetchBlockedTimes();
+  })
+  .catch(error => {
+    console.error('Error during DELETE request', error);
   })
 });
 
@@ -701,9 +690,15 @@ function showRescheduleDropdown(webinarId, appointmentElement) {
   // populateDropdownWithTimes(rescheduleTimeDropdown);
 }
 
-async function fetchBlockedTimes(startDate, endDate) {
+async function fetchBlockedTimes() {
+  const currentDate = new Date();
+  const endDate = new Date();
+  endDate.setDate(currentDate.getDate() + 120);
+
+  const startDateISO = currentDate.toISOString();
+  const endDateISO = endDate.toISOString();
   try {
-    const response = await fetch(`${baseUrl}admin/block-times/times/${startDate}/${endDate}`);
+    const response = await fetch(`${baseUrl}admin/block-times/times/${startDateISO}/${endDateISO}`);
 
     if (!response.ok) {
       throw new Error('Network response was not ok');
@@ -876,8 +871,11 @@ function updateSelectedEndTime() {
 // Display the current month initially
 generateCalendarDays(currentYear, currentMonth);
 
-// GET upcoming appointments on page load.
+// GET upcoming appointments during the next 30 days on page load.
 fetchAppointments();
+
+// GET upcoming blocked times during the next 120 days on page load.
+fetchBlockedTimes();
 
 // Populate start date/end date dropdowns with times
 populateDropdownWithTimes(currentYear, currentMonth);
