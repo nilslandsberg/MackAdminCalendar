@@ -47,7 +47,6 @@ const baseUrl = 'https://mack.spoken-app.com/api/';
 // Get references to the call buttons
 const blockTimesButton = document.getElementById('block-times-button');
 const unblockTimesButton = document.getElementById('unblock-times-button');
-const getClientsButton = document.getElementById('get-clients-button');
 
 // Get references to the dropdown menus
 const startTimeDropdown = document.getElementById('start-time-dropdown');
@@ -106,11 +105,6 @@ startTimeDropdown.addEventListener('change', (e) => {
 endTimeDropdown.addEventListener('change', (e) => {
   selectedEndTime = e.target.value;
 })
-
-// Event listener for get clients button
-getClientsButton.addEventListener('click', () => {
-  getClients();
-});
 
 // Event listener for block times button
 blockTimesButton.addEventListener('click', () => {
@@ -842,10 +836,40 @@ async function getClients() {
 
     const data = await response.json();
     const clients = data.clients;
-    console.log(clients);
+    renderClients(clients);
   } catch (error) {
     console.error('Error fetching appointments', error);
   }
+}
+
+function renderClients(clients) {
+  const tableBody = document.querySelector('#data-table tbody');
+
+  clients.forEach((client, index) => {
+    const row = tableBody.insertRow();
+
+    const lastNameCell = row.insertCell(0);
+    const firstNameCell = row.insertCell(1);
+    const companyNameCell = row.insertCell(2)
+    const industryCell = row.insertCell(3)
+    const emailCell = row.insertCell(4);
+    const businessPhoneCell = row.insertCell(5);
+    const zipCodeCell = row.insertCell(6);
+    const timeZoneCell = row.insertCell(7);
+    const countryCell = row.insertCell(8);
+    const optInMarketingCell = row.insertCell(9);
+
+    firstNameCell.textContent = client.firstName;
+    lastNameCell.textContent = client.lastName;
+    companyNameCell.textContent = client.companyName;
+    industryCell.textContent = client.industry;
+    emailCell.textContent = client.email;
+    businessPhoneCell.textContent = client.businessPhone;
+    zipCodeCell.textContent = client.zipCode;
+    timeZoneCell.textContent = client.timeZone;
+    countryCell.textContent = client.country;
+    optInMarketingCell.textContent = client.optInMarketingEmails;
+  })
 }
 
 function updateSelectedStartTime() {
@@ -871,11 +895,14 @@ function updateSelectedEndTime() {
 // Display the current month initially
 generateCalendarDays(currentYear, currentMonth);
 
-// GET upcoming appointments during the next 30 days on page load.
+// GET upcoming appointments during the next 30 days on page load
 fetchAppointments();
 
-// GET upcoming blocked times during the next 120 days on page load.
+// GET upcoming blocked times during the next 120 days on page load
 fetchBlockedTimes();
+
+// GET all clients on page load
+getClients();
 
 // Populate start date/end date dropdowns with times
 populateDropdownWithTimes(currentYear, currentMonth);

@@ -154,3 +154,22 @@ select {
 .sub-heading {
   text-align: center;
 }
+
+table {
+  border-collapse: collapse;
+  width: 100%; 
+}
+
+tr {
+  border-bottom: 1px solid #ccc; 
+}
+
+th, td {
+  border: 1px solid #ccc; 
+  padding: 8px; 
+  text-align: left; 
+}
+
+th {
+  background-color: #f2f2f2; 
+}
