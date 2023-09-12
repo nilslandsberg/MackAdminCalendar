@@ -301,63 +301,43 @@ function handleDayClick(event) {
     const selectedStartDateElement = document.getElementById('selected-start-date');
     selectedStartDateElement.textContent = `Selected Start Date: ${selectedStartDateInfo.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
   } else {
-    selectedEndDate = clickedDay;
-    
-    // Get the first day of the month (0-6 for Sunday-Saturday)
-    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-
-
+    // Check if the end date is later than the start date
     const selectedYear = parseInt(clickedDay.getAttribute('data-year'));
     const selectedMonth = parseInt(clickedDay.getAttribute('data-month'));
     const selectedDay = dayNumber;
-    
-    // Create local date object for updating the HTML
-    const selectedEndDateInfo = new Date(selectedYear, selectedMonth,selectedDay);
-    // Create UTC date object string for api calls
-    selectedEndDateUtc = new Date(Date.UTC(selectedYear, selectedMonth, selectedDay)).toISOString();
 
-    // Highlight dates between start and end dates
-    const startDateIndex = parseInt(selectedStartDate.textContent);
-    const endDateIndex = parseInt(selectedEndDate.textContent);
-   
-    if (endDateIndex >= startDateIndex) {
-      // Find the index of the selected start date within calendarDays NodeList
-      const startIndex = Array.from(calendarDays).indexOf(selectedStartDate);
-    
-      // Find the index of the selected end date within calendarDays NodeList
-      const endIndex = Array.from(calendarDays).indexOf(selectedEndDate);
-    
-      // Iterate through the days between start and end dates
-      for (let i = startIndex + 1; i < endIndex; i++) {
-        const dayToHighlight = calendarDays[i];
-        const dayOfWeekToHighlight = new Date(
-          currentYear,
-          currentMonth,
-          parseInt(dayToHighlight.textContent)
-        ).getDay();
-    
-        // Check if the day to highlight is not Saturday or Sunday
-        if (dayOfWeekToHighlight !== 0 && dayOfWeekToHighlight !== 6) {
-          dayToHighlight.classList.add('selected');
-        }
-      }
+    // Create a local date object for the selected end date
+    const selectedEndDateInfo = new Date(selectedYear, selectedMonth, selectedDay);
+
+    if (selectedEndDateInfo <= new Date(selectedStartDateUtc)) {
+      console.log('End date must be later than the start date');
+      return; // End date is not later, so don't proceed
+    }
+
+    selectedEndDate = clickedDay;
+
+    // Add the 'selected-end' class to the selected end date to highlight it
+    clickedDay.classList.add('selected-end');
+
     // Update the HTML element
     selectedEndDateElement.textContent = `Selected End Date: ${selectedEndDateInfo.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`;
-    } else {
-      console.log('End date must be later than start date')
-      selectedEndDate.classList.remove('selected');
-      return;
-    }
     isSelectingStartDate = true;
   }
 }
 
+
 // Function to clear selected date range
 function clearSelection () {
-  const selectedDates = document.querySelectorAll('.day.selected');
-  selectedDates.forEach(date => {
-    date.classList.remove('selected');
+   const selectedStartHighlights = document.querySelectorAll('.day.selected');
+  selectedStartHighlights.forEach(element => {
+    element.classList.remove('selected');
   });
+
+  const selectedEndHighlights = document.querySelectorAll('.day.selected-end');
+  selectedEndHighlights.forEach(element => {
+    element.classList.remove('selected-end');
+  });
+
   selectedStartDate = null;
   selectedStartDateUTC = null;
   selectedEndDate = null;

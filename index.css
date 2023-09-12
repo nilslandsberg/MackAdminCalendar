@@ -36,6 +36,12 @@ h1 {
   font-weight: bold; 
 }
 
+.day.selected-end {
+  background-color: darkred;
+  color: #fff; 
+  font-weight: bold; 
+}
+
 .dropdown-menu {
   display: none
 }
