@@ -445,7 +445,10 @@ function renderAppointments(appointments) {
     });
 
     cancelWebinarButton.addEventListener("click", () => {
-      deleteAppointment(appointment._id, webinarId, appointmentElement)
+      const confirmation = confirm("Are you sure you want to cancel the webinar?")
+      if (confirmation) {
+        deleteAppointment(appointment._id, webinarId, appointmentElement)
+      }
     })
   });
   appointmentsContainer.appendChild(appointmentCardsContainer);
