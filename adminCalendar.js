@@ -142,8 +142,7 @@ unblockTimesButton.addEventListener('click', () => {
     console.log('You must select a start and end date')
     return;
   }
-  console.log(selectedStartTime);
-  console.log(selectedEndTime);
+
   if (selectedStartTime) {
     updateSelectedStartTime();
   }
@@ -506,7 +505,6 @@ function handleModalTimeSelection(event) {
   const selectedTime = event.target.value;
   const selectedUtc = event.target.options[event.target.selectedIndex].getAttribute('data-utc');
   selectedRescheduleDateUtcString = selectedUtc
-  console.log(selectedRescheduleDateUtcString)
 }
 
 function generateCalendarDaysModal(year, month) {
@@ -581,10 +579,8 @@ async function rescheduleWebinar() {
       newDate: selectedRescheduleDateUtcString
     };
     
-    console.log(reqBody);
-    console.log("appointmentId: ",rescheduleAppointmentId);
     const response = await axios.patch(`${baseUrl}admin/appointment/${rescheduleAppointmentId}`, reqBody);
-    console.log('Request: ', response.request)
+
     if (response.status === 200) {
       // The update was successful, so you can fetch appointments and hide the modal.
       fetchAppointments();
