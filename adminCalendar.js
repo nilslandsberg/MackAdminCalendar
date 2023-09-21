@@ -350,6 +350,8 @@ async function fetchAppointments() {
   const currentDate = new Date();
   const endDate = new Date();
   endDate.setDate(currentDate.getDate() + 30);
+  currentDate.setDate(currentDate.getDate() - 1);
+
 
   const startDateISO = currentDate.toISOString();
   const endDateISO = endDate.toISOString();
