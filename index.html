@@ -6,6 +6,7 @@
     <title>Mack Admin Calendar</title>
     <link rel="stylesheet" href="index.css">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="rtc.js"></script>
 </head>
 <body class="container">
   <header class="">
@@ -13,6 +14,31 @@
       <img class="header-logo" src="assets/images/mack_logo_dog.png"  alt="Mack logo"/>
     </div>
   </header>
+
+  <body>
+
+    <div class="w-full p-2 flex">
+      <button id="sendOfferButton" onclick="createAndSendOffer()" class="inline-flex cursor-pointer disabled:cursor-not-allowed disabled:bg-slate-200 hover:bg-green-500 items-center rounded-sm bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ml-4" disabled="">
+          Call
+      </button>
+
+      <button id="answerButton" onclick="createAndSendAnswer()" class="inline-flex cursor-pointer disabled:cursor-not-allowed disabled:bg-slate-200 hover:bg-green-500 items-center rounded-sm bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ml-4" disabled="">
+          Answer
+      </button>
+
+      <button id="hangUpButton" onclick="disconnectRTCPeerConnection()" class="inline-flex cursor-pointer disabled:cursor-not-allowed disabled:bg-slate-200 hover:bg-red-500 items-center rounded-sm bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ml-4" disabled="">
+          Hang Up
+      </button>
+
+      <button id="muteButton" onclick="muteMic()" class="inline-flex cursor-pointer disabled:cursor-not-allowed disabled:bg-slate-200 items-center rounded-sm px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ml-4" disabled="">
+          Mute
+      </button>
+    </div>
+
+    <div class="hidden" id="videoContainer">
+        <video id="remoteAudio" autoplay="" playsinline=""></video>
+    </div>
+
     <h1>Mack Admin Calendar</h1>
     <br>
     <h2 class="sub-heading">Appointments in the Next 30 Days</h2>
