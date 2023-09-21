@@ -1,45 +1,204 @@
+@font-face {
+  font-family: 'GT America Extended Medium';
+  src: url('/assets/fonts/GT-America-Extended-Medium.woff2') format('woff2'),
+  url('/assets/fonts/GT-America-Extended-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Subheads, Body Copy, & Legal Copy */
+@font-face {
+  font-family: 'Helvetica Neue LT Pro 55 Roman';
+  src: url('/assets/fonts/HelveticaNeueLTPro-55Roman.otf') format('opentype'),
+  url('/assets/fonts/HelveticaNeueLTPro-55Roman.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Helvetica Neue LT Pro 65 Medium';
+  src: url('/assets/fonts/HelveticaNeueLTPro-65Md.otf') format('opentype'),
+  url('/assets/fonts/HelveticaNeueLTPro-65Md.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Helvetica Neue LT Pro 75 Bold';
+  src: url('/assets/fonts/HelveticaNeueLTPro-75Bd.otf') format('opentype'),
+  url('/assets/fonts/HelveticaNeueLTPro-75Bd.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Accent elements */
+@font-face {
+  font-family: 'GT America Mono Regular';
+  src: url('/src/assets/fonts/GT-America-Mono-Regular.woff2') format('woff2'),
+  url('/src/assets/fonts/GT-America-Mono-Regular.woff') format('woff'),
+  url('/src/assets/fonts/GT-America-Mono-Regular.otf') format('opentype'),
+  url('/src/assets/fonts/GT-America-Mono-Regular.ttf') format('truetype');
+  letter-spacing: -4%;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GT America Mono Medium';
+  src: url('/src/assets/fonts/GT-America-Mono-Medium.woff2') format('woff2'),
+  url('/src/assets/fonts/GT-America-Mono-Medium.woff') format('woff'),
+  url('/src/assets/fonts/GT-America-Mono-Medium.otf') format('opentype'),
+  url('/src/assets/fonts/GT-America-Mono-Medium.ttf') format('truetype');
+  letter-spacing: -4%;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GT America Mono Bold';
+  src: url('/src/assets/fonts/GT-America-Mono-Bold.woff2') format('woff2'),
+  url('/src/assets/fonts/GT-America-Mono-Bold.woff') format('woff'),
+  url('/src/assets/fonts/GT-America-Mono-Bold.otf') format('opentype'),
+  url('/src/assets/fonts/GT-America-Mono-Bold.ttf') format('truetype');
+  letter-spacing: -4%;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GT America Mono Regular Italic';
+  src: url('/src/assets/fonts/GT-America-Mono-Regular-Italic.woff2') format('woff2'),
+  url('/src/assets/fonts/GT-America-Mono-Regular-Italic.woff') format('woff'),
+  url('/src/assets/fonts/GT-America-Mono-Regular-Italic.otf') format('opentype'),
+  url('/src/assets/fonts/GT-America-Mono-Regular-Italic.ttf') format('truetype');
+  letter-spacing: -4%;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GT America Mono Medium Italic';
+  src: url('/src/assets/fonts/GT-America-Mono-Medium-Italic.woff2') format('woff2'),
+  url('/src/assets/fonts/GT-America-Mono-Medium-Italic.woff') format('woff'),
+  url('/src/assets/fonts/GT-America-Mono-Medium-Italic.otf') format('opentype'),
+  url('/src/assets/fonts/GT-America-Mono-Medium-Italic.ttf') format('truetype');
+  letter-spacing: -4%;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GT America Mono Bold Italic';
+  src: url('/src/assets/fonts/GT-America-Mono-Bold-Italic.woff2') format('woff2'),
+  url('/src/assets/fonts/GT-America-Mono-Bold-Italic.woff') format('woff'),
+  url('/src/assets/fonts/GT-America-Mono-Bold-Italic.otf') format('opentype'),
+  url('/src/assets/fonts/GT-America-Mono-Bold-Italic.ttf') format('truetype');
+  letter-spacing: -4%;
+  font-display: swap;
+}
+
+
 body {
-  font-family: Arial, sans-serif;
+    font-family: 'Helvetica Neue LT Pro 55 Roman';
+    font-size: 18px;
+    line-height: 140%;
+}
+
+.container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 80px 80px 80px;
+}
+
+.block-container {
+  background: #E9EAEC;
+  padding: 60px 20px 60px 20px;
+  margin-top: 40px;
+}
+
+.table-wrap {
+  overflow: scroll;
 }
 
 h1 {
-  text-align: center;
-}
-#calendar {
-  max-width: 400px;
-  margin: 0 auto;
-}
-.calendar-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr); /* 7 columns for each day */
-  gap: 5px;
-}
-.day {
-  text-align: center;
-  padding: 5px;
-  border: 1px solid #ccc;
-  background-color: #f9f9f9;
-}
-.day.empty {
-  background-color: transparent;
+    font-family: 'GT America Extended Medium';
+    font-size: 45px;
+    line-height: 115%;
+    text-align: center;
 }
 
-.day.selected {
-  background-color: #007bff; 
-  color: #fff; 
-  font-weight: bold; 
+h2 {
+    font-family: 'GT America Extended Medium';
+    font-size: 32px;
+    line-height: 115%;
 }
 
-.day.selected-end {
-  background-color: darkred;
-  color: #fff; 
-  font-weight: bold; 
+p span {
+    font-family: 'Helvetica Neue LT Pro 65 Medium';
+    font-size: 24px;
+    line-height: 140%;
+}
+
+.primary-btn {
+  font-family: 'Helvetica Neue LT Pro 55 Roman';
+  font-size: 14px;
+  line-height: 18px;
+  letter-spacing: 1.12px;
+  color: #fff;
+  background-color: #CD1A0A;
+  border-radius: 2px;
+  padding: 13px 20px 13px 20px;
+  border: none;
+  cursor: pointer;
+}
+
+.primary-btn:hover {
+  background-color: #E11D0B;
+}
+
+.primary-btn:focus {
+  background-color: #B91709;
+}
+
+.secondary-btn {
+  font-family: 'Helvetica Neue LT Pro 55 Roman';
+  font-size: 14px;
+  line-height: 18px;
+  letter-spacing: 1.12px;
+  color: #000;
+  background-color: #B3976B;
+  border-radius: 2px;
+  padding: 13px 20px 13px 20px;
+  border: none;
+  cursor: pointer;
+}
+
+.secondary-btn:hover {
+  background-color: #D9B781;
+}
+
+.secondary-btn:focus {
+  background-color: #A18860;
+}
+
+.tertiary-btn {
+  font-family: 'Helvetica Neue LT Pro 55 Roman';
+  font-size: 14px;
+  line-height: 18px;
+  letter-spacing: 1.12px;
+  color: #000;
+  background-color: #fff;
+  border-radius: 2px;
+  padding: 13px 20px 13px 20px;
+  border: 1px solid #000;
+  cursor: pointer;
+}
+
+.tertiary-btn:hover {
+  background-color: #EEECE7;
+}
+
+.tertiary-btn:focus {
+  background-color: #EEECE7;
 }
 
 .dropdown-menu {
@@ -86,7 +245,7 @@ h1 {
 .appointment-card-container {
   flex: 0 0 auto; 
   margin-right: 10px; 
-  border: 1px solid #ccc; 
+  border: 1px solid #000; 
   border-radius: 5px; 
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
   padding: 10px; 
@@ -96,13 +255,14 @@ h1 {
   display: flex; 
   flex-wrap: nowrap; 
   overflow-x: scroll;
-  white-space: nowrap; 
+  white-space: nowrap;
+  justify-content: center;
 }
 
 .blocked-date-container {
   flex: 0 0 auto;        
   margin-right: 10px;     
-  border: 1px solid #ccc; 
+  border: 1px solid #000; 
   padding: 10px;       
 }
 
@@ -113,7 +273,7 @@ h1 {
 }
 
 .blocked-date {
-  font-weight: bold;
+  font-family: 'Helvetica Neue LT Pro 65 Medium';
   margin-right: 10px;
 }
 
@@ -155,7 +315,6 @@ select {
   width: 150px; 
 }
 
-
 .blocked-times-button-container {
   display: flex; 
   justify-content: center;
@@ -175,15 +334,254 @@ table {
 }
 
 tr {
-  border-bottom: 1px solid #ccc; 
+  border-bottom: 1px solid #000; 
 }
 
 th, td {
-  border: 1px solid #ccc; 
+  border: 1px solid #000; 
   padding: 8px; 
   text-align: left; 
 }
 
 th {
-  background-color: #f2f2f2; 
+  background-color: #E9EAEC; 
+}
+
+label {
+  font-family: 'Helvetica Neue LT Pro 75 Bold';
+  font-size: 13px;
+  line-height: 160%;
+  letter-spacing: 0.26px;
+}
+
+select {
+  font-family: 'Helvetica Neue LT Pro 75 Bold';
+  font-size: 13px;
+  line-height: 160%;
+  letter-spacing: 0.26px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: white;
+  background-image: url("/assets/images/input_dropdown.svg");
+  background-repeat: no-repeat;
+  background-position-x: 95%;
+  background-position-y: 13px;
+  cursor: pointer;
+  padding: 10px;
+}
+
+input {
+  cursor: pointer;
+}
+
+
+/* Calendar styles  */
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+/* .day {
+  text-align: center;
+  padding: 5px;
+  border: 1px solid #000;
+  background-color: #f9f9f9;
+}
+.day.empty {
+  background-color: transparent;
+}
+
+.day.selected {
+  background-color: #007bff; 
+  color: #fff; 
+  font-family: 'Helvetica Neue LT Pro 65 Medium';
+}
+
+.day.selected-end {
+  background-color: darkred;
+  color: #fff; 
+  font-family: 'Helvetica Neue LT Pro 65 Medium';
+} */
+
+#calendar {
+  max-width: 400px;
+  margin: 0 auto;
+  border: 1px solid #000;
+  padding: 20px;
+  background-color: #fff;
+}
+
+#current-month {
+  padding-right: 0;
+  margin: 0;
+  font-size: 18px;
+  text-align: center;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.registration-item .calendar-header button {
+  background-color: transparent;
+  border: none;
+  color: var(--black);
+  padding: 0;
+  margin: 0;
+  font-weight: 900;
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.calendar-days div {
+  font-family: 'Helvetica Neue LT Pro 55 Roman';
+  text-align: center;
+  padding: 5px;
+  font-family: 'Helvetica Neue LT Pro 75 Bold';
+  color: var(--black);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr); /* 7 columns for each day */
+  gap: 8px;
+}
+
+.day {
+  font-family: 'Helvetica Neue LT Pro 55 Roman';
+  text-align: center;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.day.empty {
+  background-color: transparent;
+  cursor: default;
+}
+
+.day.selected {
+  background-color: #B3976B; 
+  font-weight: bold;
+}
+
+.day.unavailable {
+  color: #A7ABAF;
+  cursor: default;
+}   
+
+.dropdown-menu {
+  display: none
+}
+
+#next-month-btn, #prev-month-btn {
+  min-width: 50px;
+  background-color: transparent;
+  border: none;
+  color: var(--black);
+  padding: 0;
+  margin: 0;
+  font-weight: 900;
+}
+
+
+@media screen and (max-width: 768px) {
+  
+  .container {
+    padding: 0 20px 40px 20px;
+  }
+
+  h1 {
+    font-size: 32px;
+    line-height: 115%;
+  }
+
+  h2 {
+      font-size: 28px;
+      line-height: 115%;
+  }
+
+  p span {
+      font-size: 24px;
+      line-height: 140%;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  
+  .block-container {
+    padding: 40px 15px 40px 15px;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+
+  h2 {
+      font-size: 24px;
+  }
+
+  p span {
+      font-size: 20px;
+  }
+
+  .date-dropdown {
+    margin: 0 5px;
+  }
+}
+
+
+
+/* Header */
+header {
+  background-color: #fff;
+}
+
+.header-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+}
+
+.header-logo {
+  width: auto;
+  height: 32px;
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+}
+
+nav a {
+  font-family: 'Helvetica Neue LT Pro 65 Medium';
+  color: var(--black);
+  text-decoration: none;
+  font-size: 16px;
+  line-height: 140%;
+  letter-spacing: 0.16px;
+}
+
+@media (min-width: 1024px) {
+
+  .header-logo {
+    height: 51px;
+  }
+  
+  nav {
+    gap: 44px;
+  }
+
 }

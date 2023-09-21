@@ -7,21 +7,38 @@
     <link rel="stylesheet" href="index.css">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
-<body>
-    <h1>Mack Scheduler Test Admin Calendar</h1>
+<body class="container">
+  <header class="">
+    <div class="header-wrapper">
+      <img class="header-logo" src="/assets/images/mack_logo_dog.png"  alt="Mack logo"/>
+    </div>
+  </header>
+    <h1>Mack Admin Calendar</h1>
     <br>
     <h2 class="sub-heading">Appointments in the Next 30 Days</h2>
     <div id="appointments-container">
       <!-- Upcoming Appointments Render Here -->
     </div>
-    <div id="calendar">
+    <div class="block-container">
+      
+      <div id="calendar">
         <!-- Calendar header -->
         <div class="calendar-header">
-            <button id="prev-month-btn">&lt;</button>
-            <h2 id="current-month"></h2>
-            <button id="next-month-btn">&gt;</button>
+          <button id="prev-month-btn">&lt;</button>
+          <h2 id="current-month"></h2>
+          <button id="next-month-btn">&gt;</button>
         </div>
-        
+
+        <div class="calendar-days">
+            <div class="">S</div>
+            <div class="">M</div>
+            <div class="">T</div>
+            <div class="">W</div>
+            <div class="">T</div>
+            <div class="">F</div>
+            <div class="">S</div>
+        </div>
+      
         <!-- Calendar grid -->
         <div class="calendar-grid">
             <div class="day">Sun</div>
@@ -33,72 +50,76 @@
             <div class="day">Sat</div>
             <!-- Calendar days will be populated by the JavaScript -->
         </div>
-    </div>
-    <br>
-    <h2 class="sub-heading">Blocked Times</h2>
-    <!-- Dropdown menu for selecting available times-->
-    <div class="date-dropdown-container">
-      <div class="date-dropdown">
-          <div id="selected-start-date">Select Start Date</div>
-          <div id="start-time-dropdown-container">
-              <select id="start-time-dropdown">
-                  <option value="">Select Start Time</option>
-              </select>
-          </div>
       </div>
-      <div class="date-dropdown">
-          <div id="selected-end-date">Select End Date</div>
-          <div id="end-time-dropdown-container">
-              <select id="end-time-dropdown">
-                  <option value="">Select End Time</option>
-              </select>
-          </div>
+
+      <br>
+      <h2 class="sub-heading">Blocked Times</h2>
+      <!-- Dropdown menu for selecting available times-->
+      <div class="date-dropdown-container">
+        <div class="date-dropdown">
+            <div id="selected-start-date">Select Start Date</div>
+            <div id="start-time-dropdown-container">
+                <select id="start-time-dropdown">
+                    <option value="">Select Start Time</option>
+                </select>
+            </div>
+        </div>
+        <div class="date-dropdown">
+            <div id="selected-end-date">Select End Date</div>
+            <div id="end-time-dropdown-container">
+                <select id="end-time-dropdown">
+                    <option value="">Select End Time</option>
+                </select>
+            </div>
+        </div>
+    </div>
+      <br>
+      <br>
+
+      <div class="blocked-times-button-container ">
+        <!-- <div id="get-blocked-times-button">
+          <button>Get Blocked Times</button>
+        </div> -->
+        <br>
+        <div id="block-times-button">
+          <button class="primary-btn">Block Times</button>
+        </div>
+        <br>
+        <div id="unblock-times-button">
+          <button class="primary-btn">Unblock Times</button>
+        </div>
+      </div>
+      <h2 class="sub-heading">Blocked Times For The Next 120 Days</h2>
+      <div id="blocked-times-container">
+        <!-- Blocked Times Lists Will Appear Here-->
       </div>
   </div>
-    <br>
-    <br>
-    <div class="blocked-times-button-container">
-      <!-- <div id="get-blocked-times-button">
-        <button>Get Blocked Times</button>
-      </div> -->
-      <br>
-      <div id="block-times-button">
-        <button>Block Times</button>
-      </div>
-      <br>
-      <div id="unblock-times-button">
-        <button>Unblock Times</button>
-      </div>
-    </div>
-    <h2 class="sub-heading">Blocked Times For The Next 120 Days</h2>
-    <div id="blocked-times-container">
-      <!-- Blocked Times Lists Will Appear Here-->
-    </div>
-   
     
     <br>
     <h2 class="sub-heading">Client List</h2>
-    <table id="data-table">
-      <thead>
-        <tr>
-          <th>Last Name</th>
-          <th>First Name</th>
-          <th>Company Name</th>
-          <th>Industry</th>
-          <th>Email</th>
-          <th>Business Phone</th>
-          <th>Zip Code</th>
-          <th>Time Zone</th>
-          <th>Country</th>
-          <th>Opt In Marketing Emails</th>
+    <div class="table-wrap">
+      <table id="data-table">
+        <thead>
+          <tr>
+            <th>Last Name</th>
+            <th>First Name</th>
+            <th>Company Name</th>
+            <th>Industry</th>
+            <th>Email</th>
+            <th>Business Phone</th>
+            <th>Zip Code</th>
+            <th>Time Zone</th>
+            <th>Country</th>
+            <th>Opt In Marketing Emails</th>
 
-          <!-- Add more table headers for additional fields if needed -->
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Data will be inserted here -->
-      </tbody>
-    </table>
+            <!-- Add more table headers for additional fields if needed -->
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Data will be inserted here -->
+        </tbody>
+      </table>
+    </div>
     
 
     <div id="reschedule-modal" class="modal">
@@ -127,8 +148,8 @@
           <option value="dummy" disabled selected>Select A Time</option>
           <!-- Populate with available times -->
         </select>
-        <button id="reschedule-confirm">Reschedule</button>
-        <button id="reschedule-cancel">Cancel</button>
+        <button class="primary-btn" id="reschedule-confirm">Reschedule</button>
+        <button class="primary-btn" id="reschedule-cancel">Cancel</button>
       </div>
     </div>
 

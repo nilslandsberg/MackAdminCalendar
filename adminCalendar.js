@@ -411,18 +411,18 @@ function renderAppointments(appointments) {
 
     const appointmentContent = `
       <div class="client-info">
-        <p><strong>Client:</strong> ${clientInfo.firstName} ${clientInfo.lastName}</p>
-        <p><strong>Email:</strong> ${clientInfo.email}</p>
-        <p><strong>Phone:</strong> ${clientInfo.businessPhone}</p>
-        <p><strong>Company:</strong> ${clientInfo.companyName}</p>
+        <p><span>Client:</span> ${clientInfo.firstName} ${clientInfo.lastName}</p>
+        <p><span>Email:</span> ${clientInfo.email}</p>
+        <p><span>Phone:</span> ${clientInfo.businessPhone}</p>
+        <p><span>Company:</span> ${clientInfo.companyName}</p>
       </div>
       <div class="appointment-date">${appointmentDateString} - ${appointmentTime}</div>
       <div class="truck-info">
-        <p><strong>Truck to Tour:</strong> ${truckToTour}</p>
+        <p><span>Truck to Tour:</span> ${truckToTour}</p>
       </div>
-      <button class="start-webinar" data-webinar-id="${webinarId}">Start Webinar</button>
-      <button class="reschedule-webinar" data-webinar-id="${webinarId}">Reschedule Webinar</button>
-      <button class="cancel-webinar" data-webinar-id="${webinarId}">Cancel Webinar</button>
+      <button class="start-webinar primary-btn" data-webinar-id="${webinarId}">Start Webinar</button>
+      <button class="reschedule-webinar secondary-btn" data-webinar-id="${webinarId}">Reschedule Webinar</button>
+      <button class="cancel-webinar tertiary-btn" data-webinar-id="${webinarId}">Cancel Webinar</button>
     `;
     
     appointmentElement.innerHTML = appointmentContent;
