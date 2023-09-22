@@ -422,9 +422,9 @@ function renderAppointments(appointments) {
       <div class="truck-info">
         <p><span>Truck to Tour:</span> ${truckToTour}</p>
       </div>
-      <button class="start-webinar primary-btn" data-webinar-id="${liveEventId}">Start Webinar</button>
-      <button class="reschedule-webinar secondary-btn" data-webinar-id="${liveEventId}">Reschedule Webinar</button>
-      <button class="cancel-webinar tertiary-btn" data-webinar-id="${liveEventId}">Cancel Webinar</button>
+      <button class="start-webinar primary-btn" data-webinar-id="${liveEventId}">Start Tour</button>
+      <button class="reschedule-webinar secondary-btn" data-webinar-id="${liveEventId}">Reschedule Tour</button>
+      <button class="cancel-webinar tertiary-btn" data-webinar-id="${liveEventId}">Cancel Tour</button>
     `;
     
     appointmentElement.innerHTML = appointmentContent;
