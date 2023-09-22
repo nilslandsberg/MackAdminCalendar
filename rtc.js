@@ -32,7 +32,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     disableAllButtons();
 
-    getLocalAudioFeed();
+    // getLocalAudioFeed();
+    connectToWebSocket();
 
 });
 
