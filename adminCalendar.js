@@ -409,7 +409,7 @@ function renderAppointments(appointments) {
 
     const clientInfo = appointment.client;
     const truckToTour = appointment.truckToTour;
-    const webinarId = appointment.vimeoWebinarInfo.webinarId;
+    const liveEventId = appointment.vimeoWebinarInfo.liveEventId;
 
     const appointmentContent = `
       <div class="client-info">
@@ -422,9 +422,9 @@ function renderAppointments(appointments) {
       <div class="truck-info">
         <p><span>Truck to Tour:</span> ${truckToTour}</p>
       </div>
-      <button class="start-webinar primary-btn" data-webinar-id="${webinarId}">Start Webinar</button>
-      <button class="reschedule-webinar secondary-btn" data-webinar-id="${webinarId}">Reschedule Webinar</button>
-      <button class="cancel-webinar tertiary-btn" data-webinar-id="${webinarId}">Cancel Webinar</button>
+      <button class="start-webinar primary-btn" data-webinar-id="${liveEventId}">Start Tour</button>
+      <button class="reschedule-webinar secondary-btn" data-webinar-id="${liveEventId}">Reschedule Tour</button>
+      <button class="cancel-webinar tertiary-btn" data-webinar-id="${liveEventId}">Cancel Tour</button>
     `;
     
     appointmentElement.innerHTML = appointmentContent;
@@ -436,7 +436,7 @@ function renderAppointments(appointments) {
     const cancelWebinarButton = appointmentElement.querySelector(".cancel-webinar");
 
     startWebinarButton.addEventListener("click", () => {
-      const webinarLink = `https://vimeo.com/manage/webinars/${webinarId}`;
+      const webinarLink = `https://vimeo.com/manage/events/${liveEventId}/settings`;
       window.location.href = webinarLink;
     });
 
@@ -448,16 +448,16 @@ function renderAppointments(appointments) {
     cancelWebinarButton.addEventListener("click", () => {
       const confirmation = confirm("Are you sure you want to cancel the webinar?")
       if (confirmation) {
-        deleteAppointment(appointment._id, webinarId, appointmentElement)
+        deleteAppointment(appointment._id, liveEventId, appointmentElement)
       }
     })
   });
   appointmentsContainer.appendChild(appointmentCardsContainer);
 }
 
-async function deleteAppointment(appointmentId, webinarId, appointmentElement) {
+async function deleteAppointment(appointmentId, liveEventId, appointmentElement) {
   try {
-    const response = await axios.delete(`${baseUrl}admin/appointment/${appointmentId}/${webinarId}`);
+    const response = await axios.delete(`${baseUrl}admin/appointment/${appointmentId}/${liveEventId}`);
 
     if (response.status === 200) {
       // Remove the appointment element from the DOM
@@ -580,7 +580,7 @@ async function rescheduleWebinar() {
     const reqBody = {
       newDate: selectedRescheduleDateUtcString
     };
-    
+    console.log("appointmentId: ", rescheduleAppointmentId)
     const response = await axios.patch(`${baseUrl}admin/appointment/${rescheduleAppointmentId}`, reqBody);
 
     if (response.status === 200) {
@@ -652,7 +652,7 @@ function populateModalDropdown(times) {
   }
 }
 
-function showRescheduleDropdown(webinarId, appointmentElement) {
+function showRescheduleDropdown(liveEventId, appointmentElement) {
   const rescheduleWebinarContainer = document.getElementById("reschedule-webinar-container");
   const rescheduleTimeDropdown = document.getElementById("reschedule-time-dropdown");
 
