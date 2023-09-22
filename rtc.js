@@ -158,10 +158,12 @@ function getLocalAudioFeed(){
 function createRTCPeerConnection(){
     connection = new RTCPeerConnection(configuration);
 
+    /*
     // Add both video and audio tracks to the connection
     for (const track of localStream.getTracks()) {
         existingTracks.push(connection.addTrack(track, localStream));
     }
+    */
 
     // This event handles displaying remote video and audio feed from the other peer
     connection.ontrack = event => {
@@ -344,8 +346,11 @@ function setChannelEvents(channel) {
 }
 
 function muteMic() {
+    /*
     localStream.getAudioTracks().forEach((track) => {
         track.enabled = !track.enabled;
     });
+
+    */
     document.getElementById('muteButton').classList.toggle('muted');
 }
