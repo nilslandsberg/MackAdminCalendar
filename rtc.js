@@ -32,8 +32,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     disableAllButtons();
 
-    // getLocalAudioFeed();
-    connectToWebSocket();
+    getLocalAudioFeed();
+    // connectToWebSocket();
 
 });
 
@@ -346,11 +346,8 @@ function setChannelEvents(channel) {
 }
 
 function muteMic() {
-    /*
     localStream.getAudioTracks().forEach((track) => {
         track.enabled = !track.enabled;
     });
-
-    */
     document.getElementById('muteButton').classList.toggle('muted');
 }
