@@ -410,6 +410,7 @@ function renderAppointments(appointments) {
     const clientInfo = appointment.client;
     const truckToTour = appointment.truckToTour;
     const liveEventId = appointment.vimeoWebinarInfo.liveEventId;
+    const tourNotes = appointment.tourQuestionsOrInterest;
 
     const appointmentContent = `
       <div class="client-info">
@@ -422,6 +423,7 @@ function renderAppointments(appointments) {
       <div class="truck-info">
         <p><span>Truck to Tour:</span> ${truckToTour}</p>
       </div>
+      ${(tourNotes) ? `<button class="tour-notes-btn tertiary-btn data-tour-notes="${tourNotes}">View Tour Notes</button>` : ''}
       <button class="start-webinar primary-btn" data-webinar-id="${liveEventId}">Start Tour</button>
       <button class="reschedule-webinar secondary-btn" data-webinar-id="${liveEventId}">Reschedule Tour</button>
       <button class="cancel-webinar tertiary-btn" data-webinar-id="${liveEventId}">Cancel Tour</button>
@@ -434,6 +436,26 @@ function renderAppointments(appointments) {
     const startWebinarButton = appointmentElement.querySelector(".start-webinar");
     const rescheduleWebinarButton = appointmentElement.querySelector(".reschedule-webinar");
     const cancelWebinarButton = appointmentElement.querySelector(".cancel-webinar");
+
+    // Add an event listener to the "View Tour Notes" button
+    const tourNotesButton = appointmentElement.querySelector(".tour-notes-btn");
+    const tourNotesModal = document.getElementById("tourNotesModal");
+    const tourNotesContent = document.getElementById("tourNotesContent");
+
+    if (tourNotesButton) {
+      tourNotesButton.addEventListener("click", () => {
+        // Populate the modal content with tourNotes
+        tourNotesContent.textContent = tourNotes;
+        // Display the modal
+        tourNotesModal.style.display = "block";
+      });
+    }
+
+    // Add an event listener to close the modal when the close button is clicked
+    const closeBtn = document.querySelector(".close");
+    closeBtn.addEventListener("click", () => {
+      tourNotesModal.style.display = "none";
+    });
 
     startWebinarButton.addEventListener("click", () => {
       const webinarLink = `https://vimeo.com/manage/events/${liveEventId}/settings`;
