@@ -459,7 +459,7 @@ function renderAppointments(appointments) {
 
     startWebinarButton.addEventListener("click", () => {
       const webinarLink = `https://vimeo.com/manage/events/${liveEventId}/settings`;
-      window.location.href = webinarLink;
+      window.open(webinarLink, "_blank");
     });
 
     rescheduleWebinarButton.addEventListener("click", () => {
