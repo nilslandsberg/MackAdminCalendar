@@ -319,7 +319,25 @@ function handleDayClick(event) {
     selectedEndDate = clickedDay;
 
     // Add the 'selected-end' class to the selected end date to highlight it
-    clickedDay.classList.add('selected-end');
+    clickedDay.classList.add('selected');
+
+    // Highlight the dates between the selected start date and end date
+    const startDate = new Date(selectedStartDateUtc);
+    const endDate = new Date(selectedEndDateUtc);
+    const datesBetween = document.querySelectorAll('.day');
+    datesBetween.forEach(date => {
+      const dateYear = parseInt(date.getAttribute('data-year'));
+      const dateMonth = parseInt(date.getAttribute('data-month'));
+      const dateDay = parseInt(date.textContent);
+      const currentDate = new Date(dateYear, dateMonth, dateDay);
+
+      const dayOfWeek = currentDate.getDay();
+      if (dayOfWeek !==6 && dayOfWeek !== 0) {
+        if (currentDate > startDate && currentDate < endDate) {
+          date.classList.add('selected');
+        }
+      }
+    })
 
     // Update the HTML element
     selectedEndDateElement.textContent = `Selected End Date: ${selectedEndDateInfo.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`;
