@@ -404,7 +404,8 @@ function renderAppointments(appointments) {
     const appointmentTime = appointmentDate.toLocaleString("en-US", {
       hour: "numeric",
       minute: "numeric",
-      hour12: true
+      hour12: true,
+      timeZoneName: 'short'
     });
 
     const clientInfo = appointment.client;
@@ -745,7 +746,8 @@ function renderBlockedTimes(blockedTimes) {
       const timeString = utcDate.toLocaleTimeString('en-US', {
         hour: 'numeric',
         minute: '2-digit',
-        hour12: true
+        hour12: true,
+        timeZoneName: 'short'
       });
 
       blockedTimesByDate[dateKey].push(timeString);
