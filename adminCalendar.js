@@ -2,6 +2,9 @@
 // Get a reference to the calendar grid
 const calendarGrid = document.querySelector('.calendar-grid');
 
+// Access Luxon DateTime function
+var DateTime = luxon.DateTime;
+
 // date variables
 let selectedStartDate = null;
 let selectedStartDateUtc = null;
@@ -29,7 +32,6 @@ let isSelectingStartDate = true;
 
 // Set the start and end times for dropdown start date/end date time menus in UTC format
 const times = [
-  "13:00:00Z",
   "14:00:00Z",
   "15:00:00Z",
   "16:00:00Z",
@@ -237,26 +239,30 @@ function generateCalendarDays(year, month) {
 
 // Function to populate dropdown menus with times
 function populateDropdownWithTimes(year, month) {
+  
   // Get the user's time zone
-  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  // Options to display times in AM/PM format
-  const userTimeZoneOptions = {
-    timeZone: userTimeZone,
-    hour12: true,
-    hour: 'numeric',
-    minute: 'numeric',
-  };
+  const userTimeZone = DateTime.local().zoneName;
 
   times.forEach(time => {
-    // Convert the UTC time string to a Date object
-    // Make sure that if the month is a single digit that it is preceded by a 0
-    const monthString = (month +1).toString().padStart(2, '0');
-    const utcTime = new Date(`${year}-${monthString}-01T${time}`);
-    // Get the local time in the user's time zone
-    const localTime = utcTime.toLocaleTimeString('en-US', userTimeZoneOptions);
+    // Construct the ISO string for the current time
+    const isoString = `${year}-${(month + 1).toString().padStart(2, '0')}-01T${time}`;
+
+    // Create a Luxon DateTime object from the ISO string
+    const utcDateTime = DateTime.fromISO(isoString, { zone: 'utc' });
+
+    // Convert the UTC time to the user's local time zone
+    const localTime = utcDateTime.setZone(userTimeZone);
+
+    // Format the local time according to the user's locale
+    const formattedTime = localTime.toFormat('h:mm a'); 
+
+    // If the formatted time starts with '0', remove the first character
+    if (formattedTime.startsWith('0')) {
+      formattedTime = formattedTime.substring(1);
+    }
 
     const option = document.createElement('option');
-    option.textContent = localTime;
+    option.textContent = formattedTime;
     option.value = time;
 
     startTimeDropdown.appendChild(option.cloneNode(true));
