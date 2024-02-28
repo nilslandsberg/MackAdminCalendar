@@ -376,10 +376,19 @@ function populateEndDateDropdownWithTimes(year, providedMonth, day) {
 // Function to handle click events on calendar days
 function handleDayClick(event) {
   const clickedDay = event.target;
-  const dayNumber = clickedDay.textContent
-  const dayOfWeek = new Date(currentYear, currentMonth, dayNumber).getDay();
+  const dayNumber = clickedDay.textContent;
+  const selectedDate = new Date(currentYear, currentMonth, dayNumber);
+  const dayOfWeek = selectedDate.getDay();
   const selectedEndDateElement = document.getElementById('selected-end-date');
+  
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
+  if (selectedDate <= today) {
+    console.log("Cannot select date in the past or today.");
+    return;
+  }
+  
   if (!clickedDay) {
     return;
   }
@@ -405,7 +414,7 @@ function handleDayClick(event) {
     selectedStartDateUtc = new Date(Date.UTC(selectedYear, selectedMonth, selectedDay)).toISOString();
 
     isSelectingStartDate = false;
-    populateStartDateDropdownWithTimes(currentYear, currentMonth, selectedDay);
+
     // Update the HTML element to show selected start date
     const selectedStartDateElement = document.getElementById('selected-start-date');
     selectedStartDateElement.textContent = `Selected Start Date: ${selectedStartDateInfo.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
@@ -450,7 +459,6 @@ function handleDayClick(event) {
 
     // Update the HTML element
     selectedEndDateElement.textContent = `Selected End Date: ${selectedEndDateInfo.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`;
-    populateEndDateDropdownWithTimes(currentYear, currentMonth, selectedDay);
     isSelectingStartDate = true;
   }
 }
