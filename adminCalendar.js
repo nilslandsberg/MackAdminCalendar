@@ -30,6 +30,7 @@ let currentMonth = currentDate.getMonth();
 // flag for toggle if selecting start date
 let isSelectingStartDate = true;
 
+
 // Set the start and end times for dropdown start date/end date time menus in UTC format
 const times = [
   "14:00:00Z",
@@ -42,13 +43,27 @@ const times = [
   "21:00:00Z"
 ];
 
+const daylightSavingTimes = [
+  "13:00:00Z",
+  "14:00:00Z",
+  "15:00:00Z",
+  "16:00:00Z",
+  "17:00:00Z",
+  "18:00:00Z",
+  "19:00:00Z",
+  "20:00:00Z"
+]
+
 // API CALLS
 // base URL
 const baseUrl = 'https://mack.spoken-app.com/api/';
+// const baseUrl = 'http://localhost:3000/api/';
 
 // Get references to the call buttons
 const blockTimesButton = document.getElementById('block-times-button');
 const unblockTimesButton = document.getElementById('unblock-times-button');
+const blockDayButton = document.getElementById('block-full-day-button');
+const unblockDayButton = document.getElementById('unblock-full-day-button');
 
 // Get references to the dropdown menus
 const startTimeDropdown = document.getElementById('start-time-dropdown');
@@ -82,8 +97,6 @@ document.getElementById('prev-month-btn').addEventListener('click', () => {
 
   generateCalendarDays(currentYear, currentMonth);
   document.getElementById('current-month').textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date(currentYear, currentMonth, 1));
-
-  populateDropdownWithTimes(currentYear, currentMonth);
 });
 
 // Button event listener to navigate to next month button
@@ -96,7 +109,6 @@ document.getElementById('next-month-btn').addEventListener('click', () => {
   generateCalendarDays(currentYear, currentMonth);
   document.getElementById('current-month').textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date(currentYear, currentMonth, 1));
 
-  populateDropdownWithTimes(currentYear, currentMonth);
 });
 
 // Event listeners for dropdown menus
@@ -107,6 +119,48 @@ startTimeDropdown.addEventListener('change', (e) => {
 endTimeDropdown.addEventListener('change', (e) => {
   selectedEndTime = e.target.value;
 })
+
+// Event listener for block day button
+blockDayButton.addEventListener('click', () => {
+  if (!selectedStartDateUtc) {
+    console.log('You must select a date to block');
+    return;
+  }
+
+  const reqBody = {
+    reqDate: selectedStartDateUtc,
+  }
+
+  blockTimes(`${baseUrl}admin/block-times/day`, reqBody)
+    .then(data => {
+      console.log('POST request successful', data);
+      fetchBlockedTimes();
+    })
+    .catch(error => {
+      console.error('Error during POST request', error);
+    })
+});
+
+// Event listener for unblock day button
+unblockDayButton.addEventListener('click', () => {
+  if (!selectedStartDateUtc) {
+    console.log("You must select a date to unblock");
+    return;
+  }
+
+  const reqBody = {
+    reqDate: selectedStartDateUtc,
+  }
+
+  unblockTimes(`${baseUrl}admin/block-times/day`, reqBody)
+    .then(data => {
+      console.log('DELETE request successful', data);
+      fetchBlockedTimes();
+    })
+    .catch(error => {
+      console.error('Error during DELETE request', error);
+    })
+});
 
 // Event listener for block times button
 blockTimesButton.addEventListener('click', () => {
@@ -238,12 +292,21 @@ function generateCalendarDays(year, month) {
 
 
 // Function to populate dropdown menus with times
-function populateDropdownWithTimes(year, month) {
-  
+function populateStartDateDropdownWithTimes(year, providedMonth, day) {
+  startTimeDropdown.innerHTML = ''; // Clear previous entries
+  endTimeDropdown.innerHTML = ''; // Clear previous entries
+  let month = providedMonth + 1
   // Get the user's time zone
   const userTimeZone = DateTime.local().zoneName;
+  // Create Luxon object from year, month, and day
+  const selectedDate = DateTime.fromObject({ year, month, day }).setZone(userTimeZone);
 
-  times.forEach(time => {
+  // Check to see if selectedDate is in DST
+  const isDST = selectedDate.isInDST;
+  console.log("Is Start Date in DST?: ", isDST)
+  const timeOptions = isDST ? daylightSavingTimes : times
+  
+  timeOptions.forEach(time => {
     // Construct the ISO string for the current time
     const isoString = `${year}-${(month + 1).toString().padStart(2, '0')}-01T${time}`;
 
@@ -266,6 +329,46 @@ function populateDropdownWithTimes(year, month) {
     option.value = time;
 
     startTimeDropdown.appendChild(option.cloneNode(true));
+    // endTimeDropdown.appendChild(option.cloneNode(true));
+  });
+}
+
+// Function to populate dropdown menus with times
+function populateEndDateDropdownWithTimes(year, providedMonth, day) {
+  
+  let month = providedMonth + 1
+  // Get the user's time zone
+  const userTimeZone = DateTime.local().zoneName;
+  // Create Luxon object from year, month, and day
+  const selectedDate = DateTime.fromObject({ year, month, day }).setZone(userTimeZone)
+  // Check to see if selectedDate is in DST
+  const isDST = selectedDate.isInDST;
+  console.log("Is End Date in DST?: ", isDST)
+  const timeOptions = isDST ? daylightSavingTimes : times
+  
+  timeOptions.forEach(time => {
+    // Construct the ISO string for the current time
+    const isoString = `${year}-${(month + 1).toString().padStart(2, '0')}-01T${time}`;
+
+    // Create a Luxon DateTime object from the ISO string
+    const utcDateTime = DateTime.fromISO(isoString, { zone: 'utc' });
+
+    // Convert the UTC time to the user's local time zone
+    const localTime = utcDateTime.setZone(userTimeZone);
+
+    // Format the local time according to the user's locale
+    const formattedTime = localTime.toFormat('h:mm a'); 
+
+    // If the formatted time starts with '0', remove the first character
+    if (formattedTime.startsWith('0')) {
+      formattedTime = formattedTime.substring(1);
+    }
+
+    const option = document.createElement('option');
+    option.textContent = formattedTime;
+    option.value = time;
+
+    // startTimeDropdown.appendChild(option.cloneNode(true));
     endTimeDropdown.appendChild(option.cloneNode(true));
   });
 }
@@ -302,7 +405,7 @@ function handleDayClick(event) {
     selectedStartDateUtc = new Date(Date.UTC(selectedYear, selectedMonth, selectedDay)).toISOString();
 
     isSelectingStartDate = false;
-
+    populateStartDateDropdownWithTimes(currentYear, currentMonth, selectedDay);
     // Update the HTML element to show selected start date
     const selectedStartDateElement = document.getElementById('selected-start-date');
     selectedStartDateElement.textContent = `Selected Start Date: ${selectedStartDateInfo.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
@@ -347,6 +450,7 @@ function handleDayClick(event) {
 
     // Update the HTML element
     selectedEndDateElement.textContent = `Selected End Date: ${selectedEndDateInfo.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`;
+    populateEndDateDropdownWithTimes(currentYear, currentMonth, selectedDay);
     isSelectingStartDate = true;
   }
 }
@@ -664,33 +768,31 @@ function fetchAvailableTimes(selectedDate) {
 
 function populateModalDropdown(times) {
   modalDropdown.innerHTML = ''; // Clear previous entries
-
+  console.log(times)
   if (times.length === 0) {
     // If no available times, show the default option
     const defaultOption = document.createElement('option');
     defaultOption.textContent = 'No Times Available. Select Another Date';
     modalDropdown.appendChild(defaultOption);
   } else {
-
     const defaultOption = document.createElement('option');
     defaultOption.textContent = 'Select A Time';
     modalDropdown.appendChild(defaultOption);
-    // Populate the dropdown with available times
-    // Get the user's time zone
-    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    // Variable to display times in am/pm format
-    const userTimeZoneOptions = {
-      timeZone: userTimeZone,
-      hour12: true,
-      hour: 'numeric',
-      minute: 'numeric',
-    }
 
+    // Get the user's time zone
+    const userTimeZone = luxon.DateTime.local().zoneName;
+    console.log("My time zone: ", userTimeZone)
     times.forEach(time => {
-      // Convert the date string into UTC Date
-      const utcDate = new Date(time);
-      // Set the time string to the user's local time zone
-      const userTimeZoneTime = utcDate.toLocaleString('en-US', userTimeZoneOptions);
+      // Parse the time string as UTC
+      const utcTime = luxon.DateTime.fromISO(time, { zone: 'utc' });
+
+      // Convert the UTC time to the user's time zone for display
+      const userTimeZoneTime = utcTime.setZone(userTimeZone).toLocaleString({
+          hour: 'numeric',
+          minute: 'numeric',
+          hour12: true,
+      });
+
       const option = document.createElement('option');
       option.textContent = userTimeZoneTime;
       option.setAttribute('data-utc', time); // Stores the UTC string for access when selecting
@@ -698,6 +800,7 @@ function populateModalDropdown(times) {
     });
   }
 }
+
 
 function showRescheduleDropdown(liveEventId, appointmentElement) {
   const rescheduleWebinarContainer = document.getElementById("reschedule-webinar-container");
@@ -709,10 +812,6 @@ function showRescheduleDropdown(liveEventId, appointmentElement) {
   rescheduleWebinarContainer.style.position = "absolute";
   rescheduleWebinarContainer.style.left = `${appointmentRect.left}px`;
   rescheduleWebinarContainer.style.top = `${appointmentRect.top - rescheduleWebinarContainer.clientHeight}px`;
-
-  // Populate the dropdown with reschedule time options here
-  // Example: You can use the same logic as in populateDropdownWithTimes function
-  // populateDropdownWithTimes(rescheduleTimeDropdown);
 }
 
 async function fetchBlockedTimes() {
@@ -813,20 +912,17 @@ function renderBlockedTimes(blockedTimes) {
 
 async function blockTimes(url, body) {
   try {
-    const response = await fetch(url, {
-      method: 'POST',
+    const response = await axios.post(url, body, {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
 
-    const data = await response.json();
-    return data;
+    return response.data;
   } catch (error) {
     console.error('Error making POST request', error);
   }
@@ -926,6 +1022,3 @@ fetchBlockedTimes();
 
 // GET all clients on page load
 getClients();
-
-// Populate start date/end date dropdowns with times
-populateDropdownWithTimes(currentYear, currentMonth);
