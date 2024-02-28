@@ -56,8 +56,8 @@ const daylightSavingTimes = [
 
 // API CALLS
 // base URL
-// const baseUrl = 'https://mack.spoken-app.com/api/';
-const baseUrl = 'http://localhost:3000/api/';
+const baseUrl = 'https://mack.spoken-app.com/api/';
+// const baseUrl = 'http://localhost:3000/api/';
 
 // Get references to the call buttons
 const blockTimesButton = document.getElementById('block-times-button');
