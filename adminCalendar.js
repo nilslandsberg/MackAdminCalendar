@@ -62,6 +62,8 @@ const baseUrl = 'http://localhost:3000/api/';
 // Get references to the call buttons
 const blockTimesButton = document.getElementById('block-times-button');
 const unblockTimesButton = document.getElementById('unblock-times-button');
+const blockDayButton = document.getElementById('block-full-day-button');
+const unblockDayButton = document.getElementById('unblock-full-day-button');
 
 // Get references to the dropdown menus
 const startTimeDropdown = document.getElementById('start-time-dropdown');
@@ -117,6 +119,48 @@ startTimeDropdown.addEventListener('change', (e) => {
 endTimeDropdown.addEventListener('change', (e) => {
   selectedEndTime = e.target.value;
 })
+
+// Event listener for block day button
+blockDayButton.addEventListener('click', () => {
+  if (!selectedStartDateUtc) {
+    console.log('You must select a date to block');
+    return;
+  }
+
+  const reqBody = {
+    reqDate: selectedStartDateUtc,
+  }
+
+  blockTimes(`${baseUrl}admin/block-times/day`, reqBody)
+    .then(data => {
+      console.log('POST request successful', data);
+      fetchBlockedTimes();
+    })
+    .catch(error => {
+      console.error('Error during POST request', error);
+    })
+});
+
+// Event listener for unblock day button
+unblockDayButton.addEventListener('click', () => {
+  if (!selectedStartDateUtc) {
+    console.log("You must select a date to unblock");
+    return;
+  }
+
+  const reqBody = {
+    reqDate: selectedStartDateUtc,
+  }
+
+  unblockTimes(`${baseUrl}admin/block-times/day`, reqBody)
+    .then(data => {
+      console.log('DELETE request successful', data);
+      fetchBlockedTimes();
+    })
+    .catch(error => {
+      console.error('Error during DELETE request', error);
+    })
+});
 
 // Event listener for block times button
 blockTimesButton.addEventListener('click', () => {
@@ -256,12 +300,12 @@ function populateStartDateDropdownWithTimes(year, providedMonth, day) {
   const userTimeZone = DateTime.local().zoneName;
   // Create Luxon object from year, month, and day
   const selectedDate = DateTime.fromObject({ year, month, day }).setZone(userTimeZone);
-  console.log(selectedDate)
+
   // Check to see if selectedDate is in DST
   const isDST = selectedDate.isInDST;
   console.log("Is Start Date in DST?: ", isDST)
   const timeOptions = isDST ? daylightSavingTimes : times
-  console.log(timeOptions)
+  
   timeOptions.forEach(time => {
     // Construct the ISO string for the current time
     const isoString = `${year}-${(month + 1).toString().padStart(2, '0')}-01T${time}`;
