@@ -713,7 +713,16 @@ function handleModalDayClick(event) {
   const selectedYear = parseInt(clickedDay.getAttribute('data-year'));
   const selectedMonth = parseInt(clickedDay.getAttribute('data-month'));
   const selectedDay = parseInt(dayNumber);
+  const selectedDate = new Date(currentYear, currentMonth, dayNumber);
   const dayOfWeek = new Date(selectedYear, selectedMonth, selectedDay).getDay(0)
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (selectedDate <= today) {
+    console.log("Cannot select date in the past or today.");
+    return;
+  }
 
   // Check if day is a Saturday or Sunday
   if ( dayOfWeek === 0 || dayOfWeek === 6) {
