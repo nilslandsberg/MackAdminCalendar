@@ -384,8 +384,8 @@ function handleDayClick(event) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  if (selectedDate < today) {
-    console.log("Cannot select date in the past.");
+  if (selectedDate <= today) {
+    console.log("Cannot select date in the past or today.");
     return;
   }
   
@@ -719,8 +719,8 @@ function handleModalDayClick(event) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  if (selectedDate <= today) {
-    console.log("Cannot select date in the past or today.");
+  if (selectedDate < today) {
+    console.log("Cannot select date in the past.");
     return;
   }
 
